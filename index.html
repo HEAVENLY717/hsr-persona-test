@@ -1,0 +1,1403 @@
+﻿<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>星穹铁道人格同步测试 | PERSONA SYNC TEST</title>
+<meta property="og:title" content="星穹铁道·人格同步测试｜50题测出你的本命角色">
+<meta property="og:description" content="回答50道情境题，从10个维度解析你的人格，与89名星穹铁道可玩角色匹配同步率！">
+<meta property="og:type" content="website">
+<style>
+:root{
+  --bg:#060918;
+  --panel:#0a1118;
+  --panel2:#0d151e;
+  --line:#1c2f3f;
+  --line2:#24425a;
+  --txt:#cfe3ee;
+  --dim:#5f7c90;
+  --cyan:#9db8ff;
+  --cyan2:#dce6ff;
+  --amber:#ffb648;
+  --red:#ff5d5d;
+  --mono:"Cascadia Mono",Consolas,"Courier New",monospace;
+  --sans:"Microsoft YaHei","PingFang SC","Segoe UI",sans-serif;
+}
+*{margin:0;padding:0;box-sizing:border-box}
+html,body{height:100%}
+body{
+  background:var(--bg);
+  color:var(--txt);
+  font-family:var(--sans);
+  min-height:100vh;
+  background-image:
+    radial-gradient(ellipse 80% 50% at 50% -10%, rgba(157,184,255,.07), transparent),
+    linear-gradient(rgba(157,184,255,.03) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(157,184,255,.03) 1px, transparent 1px);
+  background-size:100% 100%,42px 42px,42px 42px;
+  overflow-x:hidden;
+}
+body::after{
+  content:"";position:fixed;inset:0;pointer-events:none;z-index:999;
+  background:repeating-linear-gradient(0deg, rgba(0,0,0,.12) 0 1px, transparent 1px 3px);
+  opacity:.35;
+}
+.wrap{max-width:1060px;margin:0 auto;padding:28px 18px 60px;position:relative;z-index:1}
+.screen{display:none;animation:fadeUp .45s ease both}
+.screen.on{display:block}
+@keyframes fadeUp{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:none}}
+
+/* ===== 通用组件 ===== */
+.hazard{height:6px;background:repeating-linear-gradient(-45deg,var(--amber) 0 10px,#141414 10px 20px);opacity:.85;border-radius:2px}
+.panel{
+  background:linear-gradient(180deg,var(--panel2),var(--panel));
+  border:1px solid var(--line);
+  clip-path:polygon(14px 0,100% 0,100% calc(100% - 14px),calc(100% - 14px) 100%,0 100%,0 14px);
+  padding:26px 28px;position:relative;
+}
+.panel::before{content:"";position:absolute;top:0;left:0;width:46px;height:2px;background:var(--cyan);opacity:.9}
+.corner{position:relative}
+.corner::after{
+  content:"";position:absolute;top:-1px;right:-1px;width:10px;height:10px;
+  border-top:2px solid var(--cyan);border-right:2px solid var(--cyan);opacity:.7;
+}
+.btn{
+  display:inline-flex;align-items:center;gap:10px;cursor:pointer;user-select:none;
+  font-family:var(--mono);font-size:15px;letter-spacing:2px;color:#04121b;
+  background:linear-gradient(180deg,var(--cyan2),var(--cyan));
+  border:none;padding:13px 34px;font-weight:700;
+  clip-path:polygon(10px 0,100% 0,100% calc(100% - 10px),calc(100% - 10px) 100%,0 100%,0 10px);
+  transition:filter .15s,transform .1s;
+}
+.btn:hover{filter:brightness(1.15)}
+.btn:active{transform:scale(.97)}
+.btn.ghost{
+  background:transparent;color:var(--cyan);border:1px solid var(--line2);font-weight:400;
+}
+.btn.ghost:hover{background:rgba(157,184,255,.08);filter:none}
+.btn:disabled{opacity:.35;cursor:not-allowed;filter:none}
+.tag{
+  font-family:var(--mono);font-size:11px;letter-spacing:1.5px;color:var(--cyan);
+  border:1px solid rgba(157,184,255,.35);padding:3px 9px;display:inline-block;
+  background:rgba(157,184,255,.06);
+}
+.kw{display:inline-block;font-size:12px;color:var(--cyan2);border:1px solid rgba(157,184,255,.25);
+  background:rgba(157,184,255,.05);padding:3px 10px;margin:3px 4px 0 0;border-radius:2px}
+.h-sec{font-family:var(--mono);color:var(--dim);font-size:12px;letter-spacing:3px;margin-bottom:10px}
+.h-sec b{color:var(--cyan);font-weight:400}
+
+/* ===== 启动画面 ===== */
+#boot{min-height:80vh;display:flex;align-items:center;justify-content:center}
+#bootbox{font-family:var(--mono);font-size:14px;color:var(--cyan);width:560px;max-width:92vw;line-height:2.1;text-shadow:0 0 8px rgba(157,184,255,.5)}
+#bootbox .ln{opacity:0}
+#bootbox .ln.show{opacity:1;animation:bootline .18s steps(2) both}
+#bootbox .ok{color:var(--amber)}
+@keyframes bootline{from{opacity:0}to{opacity:1}}
+.blink{animation:blink 1s steps(2) infinite}
+@keyframes blink{50%{opacity:0}}
+
+/* ===== 标题 ===== */
+.topbar{display:flex;align-items:center;justify-content:space-between;margin-bottom:22px;gap:14px;flex-wrap:wrap}
+.brand{display:flex;align-items:center;gap:14px}
+.brand .logo{
+  width:44px;height:44px;border:2px solid var(--cyan);display:grid;place-items:center;
+  font-family:var(--mono);color:var(--cyan);font-weight:700;font-size:18px;
+  clip-path:polygon(8px 0,100% 0,100% calc(100% - 8px),calc(100% - 8px) 100%,0 100%,0 8px);
+  background:rgba(157,184,255,.06);
+}
+.brand h1{font-size:19px;letter-spacing:4px;font-weight:600}
+.brand .sub{font-family:var(--mono);font-size:10px;color:var(--dim);letter-spacing:2px;margin-top:2px}
+.statusbox{font-family:var(--mono);font-size:11px;color:var(--dim);letter-spacing:1px;text-align:right;line-height:1.8}
+.statusbox .live{color:#57e389}
+
+/* ===== 欢迎页 ===== */
+.hero-title{font-size:40px;letter-spacing:10px;font-weight:700;margin:6px 0 4px;
+  background:linear-gradient(90deg,#fff,var(--cyan2) 60%,var(--cyan));-webkit-background-clip:text;background-clip:text;color:transparent}
+.hero-en{font-family:var(--mono);color:var(--dim);letter-spacing:5px;font-size:13px}
+.hero-desc{color:#9db4c4;line-height:2;font-size:14.5px;margin:20px 0 6px;max-width:760px}
+.dims{display:grid;grid-template-columns:repeat(5,1fr);gap:10px;margin:22px 0}
+.dim-cell{border:1px solid var(--line);background:rgba(157,184,255,.03);padding:12px 8px;text-align:center;
+  clip-path:polygon(8px 0,100% 0,100% calc(100% - 8px),calc(100% - 8px) 100%,0 100%,0 8px)}
+.dim-cell .no{font-family:var(--mono);font-size:10px;color:var(--amber);letter-spacing:2px}
+.dim-cell .nm{font-size:14px;margin-top:4px;letter-spacing:2px}
+.note{font-size:12px;color:var(--dim);line-height:1.9;margin-top:16px}
+.note b{color:#9db4c4;font-weight:400}
+
+/* ===== 答题页 ===== */
+.q-progress{display:flex;gap:3px;margin:6px 0 18px}
+.q-progress i{flex:1;height:8px;background:#14212d;transform:skewX(-18deg);transition:background .2s}
+.q-progress i.f{background:var(--cyan);box-shadow:0 0 6px rgba(157,184,255,.6)}
+.q-meta{display:flex;justify-content:space-between;align-items:baseline;font-family:var(--mono);font-size:12px;color:var(--dim);letter-spacing:2px}
+.q-num{color:var(--amber);font-size:15px}
+.q-card{margin-top:18px}
+.q-text{font-size:20px;line-height:1.8;margin:8px 0 22px;letter-spacing:1px}
+.q-text .qmark{color:var(--cyan)}
+.opts{display:flex;flex-direction:column;gap:12px}
+.opt{
+  border:1px solid var(--line);background:rgba(255,255,255,.015);cursor:pointer;
+  padding:15px 18px 15px 16px;display:flex;gap:14px;align-items:flex-start;
+  clip-path:polygon(10px 0,100% 0,100% calc(100% - 10px),calc(100% - 10px) 100%,0 100%,0 10px);
+  transition:border-color .15s,background .15s,transform .08s;font-size:15px;line-height:1.7;color:#b9cdd9;
+}
+.opt:hover{border-color:var(--cyan);background:rgba(157,184,255,.06);transform:translateX(4px)}
+.opt .key{
+  font-family:var(--mono);color:var(--cyan);border:1px solid var(--line2);min-width:26px;height:26px;
+  display:grid;place-items:center;font-size:13px;flex-shrink:0;margin-top:2px;
+}
+.opt:hover .key{background:rgba(157,184,255,.15)}
+.opt.sel{border-color:var(--amber);background:rgba(255,182,72,.07)}
+.opt.sel .key{color:var(--amber);border-color:var(--amber)}
+.q-foot{display:flex;justify-content:space-between;align-items:center;margin-top:22px}
+.q-navhint{font-family:var(--mono);font-size:11px;color:var(--dim);letter-spacing:1px}
+
+/* ===== 报告页 ===== */
+.rep-head{margin:8px 0 20px}
+.rep-head h2{font-size:28px;letter-spacing:6px}
+.rep-grid{display:grid;grid-template-columns:420px 1fr;gap:18px;align-items:stretch}
+@media(max-width:900px){.rep-grid{grid-template-columns:1fr}}
+.radarbox{display:grid;place-items:center;padding:8px 0}
+.bars .bar-row{display:flex;align-items:center;gap:10px;margin:9px 0}
+.bars .bn{width:82px;font-size:13px;color:#9db4c4;flex-shrink:0;letter-spacing:1px}
+.bars .bt{flex:1;height:10px;background:#13202b;position:relative;transform:skewX(-18deg);overflow:hidden}
+.bars .bf{height:100%;background:linear-gradient(90deg,#4d5fa6,var(--cyan));box-shadow:0 0 8px rgba(157,184,255,.5);transition:width .8s cubic-bezier(.2,.8,.2,1)}
+.bars .bv{font-family:var(--mono);font-size:12px;color:var(--dim);width:32px;text-align:right}
+.top3{margin-top:18px;display:flex;flex-direction:column;gap:18px}
+.match-card{display:grid;grid-template-columns:250px 1fr;gap:22px;align-items:center}
+@media(max-width:720px){.match-card{grid-template-columns:1fr}}
+.match-rank{font-family:var(--mono);font-size:11px;letter-spacing:3px;color:var(--dim)}
+.match-rank .r1{color:var(--amber)}
+.match-pct{font-family:var(--mono);font-size:40px;font-weight:700;color:var(--cyan);text-shadow:0 0 18px rgba(157,184,255,.45);line-height:1}
+.match-pct small{font-size:15px;color:var(--dim);font-weight:400;letter-spacing:2px}
+.ch-name{font-size:24px;letter-spacing:3px;margin:8px 0 2px}
+.ch-en{font-family:var(--mono);font-size:11px;color:var(--dim);letter-spacing:2px}
+.ch-meta{font-size:12.5px;color:#8fa8b8;margin-top:8px}
+.ch-meta em{font-style:normal;color:var(--amber)}
+.stars{color:var(--amber);letter-spacing:2px;font-size:13px}
+.ch-line{margin-top:10px;font-size:14px;color:#a8c0cf;line-height:1.8}
+.ch-desc{margin-top:8px;font-size:13px;color:#8ba2b1;line-height:1.9}
+.ch-quote{
+  margin-top:12px;border-left:2px solid var(--amber);padding:6px 12px;
+  font-size:13px;color:var(--amber);background:rgba(255,182,72,.05);line-height:1.7;
+}
+.match-why{margin-top:10px;font-size:12.5px;color:#7d97a8;line-height:1.8}
+.match-why b{color:var(--cyan2);font-weight:400}
+.rep-actions{display:flex;gap:14px;margin-top:26px;flex-wrap:wrap}
+.mini-card .match-pct{font-size:30px}
+.mini-card .ch-name{font-size:20px}
+
+/* ===== 角色库 ===== */
+.roster{display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:12px;margin-top:16px}
+.rcard{
+  border:1px solid var(--line);background:linear-gradient(180deg,var(--panel2),var(--panel));
+  padding:16px 16px 14px;cursor:pointer;position:relative;
+  clip-path:polygon(10px 0,100% 0,100% calc(100% - 10px),calc(100% - 10px) 100%,0 100%,0 10px);
+  transition:border-color .15s,transform .12s;
+}
+.rcard:hover{border-color:var(--cyan);transform:translateY(-3px)}
+.rcard .rn{font-size:16.5px;letter-spacing:2px}
+.rcard .rr{position:absolute;top:12px;right:14px;font-size:10.5px}
+.rcard .rf{font-family:var(--mono);font-size:10.5px;color:var(--dim);margin-top:3px;letter-spacing:1px}
+.rcard .rk{margin-top:9px;font-size:11.5px;color:#7fa0b3;line-height:1.9}
+
+/* ===== 弹窗 ===== */
+.modal-mask{position:fixed;inset:0;background:rgba(2,6,10,.82);display:none;place-items:center;z-index:1000;backdrop-filter:blur(3px)}
+.modal-mask.on{display:grid}
+.modal{width:680px;max-width:94vw;max-height:88vh;overflow:auto;padding:26px 28px;
+  background:linear-gradient(180deg,#0e1822,#0a1118);border:1px solid var(--line2);
+  clip-path:polygon(16px 0,100% 0,100% calc(100% - 16px),calc(100% - 16px) 100%,0 100%,0 16px)}
+.modal .mgrid{display:grid;grid-template-columns:230px 1fr;gap:20px;align-items:start}
+@media(max-width:640px){.modal .mgrid{grid-template-columns:1fr}}
+.m-close{margin-top:18px}
+.m-dimline{display:flex;align-items:center;gap:8px;margin:5px 0;font-size:12px}
+.m-dimline .n{width:70px;color:#8fa8b8;flex-shrink:0}
+.m-dimline .t{flex:1;height:7px;background:#13202b;transform:skewX(-18deg)}
+.m-dimline .t i{display:block;height:100%;background:var(--amber)}
+.m-dimline .v{font-family:var(--mono);color:var(--dim);width:28px;text-align:right}
+
+footer{margin-top:46px;text-align:center;font-family:var(--mono);font-size:10.5px;color:#3d5566;letter-spacing:1.5px;line-height:2}
+.open-guide{
+  position:fixed;top:0;left:0;right:0;z-index:2000;display:none;align-items:center;gap:8px;
+  background:rgba(10,17,24,.97);border-bottom:1px solid var(--line2);
+  padding:10px 14px;font-size:13px;color:#cfe3ee;backdrop-filter:blur(4px);
+}
+.open-guide.on{display:flex}
+.open-guide b{color:var(--amber)}
+.open-guide .x{margin-left:auto;cursor:pointer;font-family:var(--mono);color:var(--dim);
+  padding:2px 9px;border:1px solid var(--line);flex-shrink:0}
+.open-guide .x:hover{color:var(--amber);border-color:var(--amber)}
+::-webkit-scrollbar{width:9px;height:9px}
+::-webkit-scrollbar-thumb{background:#1d3345}
+::-webkit-scrollbar-track{background:#060b11}
+</style>
+</head>
+<body>
+
+<!-- QQ/微信内置浏览器引导 -->
+<div class="open-guide" id="open-guide">
+  <span>📍 当前在QQ/微信内置浏览器中，点击右上角 <b>⋯</b> → 选择「<b>在浏览器打开</b>」体验更佳</span>
+  <span class="x" id="guide-x">✕</span>
+</div>
+
+<!-- 启动画面 -->
+<div class="wrap"><div class="screen on" id="boot">
+  <div id="bootbox">
+    <div class="ln">&gt; 星海列车网 // 终端握手 ………… <span class="ok">OK</span></div>
+    <div class="ln">&gt; 加载人格分析模块 PERSONA-CORE v2.4 ………… <span class="ok">OK</span></div>
+    <div class="ln">&gt; 校验角色登记库：89 名角色（开拓者五形态合并） ………… <span class="ok">OK</span></div>
+    <div class="ln">&gt; 载入 10 维人格基准 &amp; 50 题题库 ………… <span class="ok">OK</span></div>
+    <div class="ln">&gt; 同步终端就绪。<span class="blink">▊</span></div>
+  </div>
+</div></div>
+
+<div class="wrap" style="display:none" id="main">
+
+  <div class="topbar">
+    <div class="brand">
+      <div class="logo">S</div>
+      <div>
+        <h1>星穹铁道 · 人格同步测试</h1>
+        <div class="sub">ASTRAL EXPRESS // PERSONA SYNC TERMINAL</div>
+      </div>
+    </div>
+    <div class="statusbox" id="statusbox">LINK <span class="live">●</span> STABLE<br>NODE // 星穹列车·车头车厢</div>
+  </div>
+
+  <!-- 欢迎页 -->
+  <section class="screen" id="scr-welcome">
+    <div class="panel corner">
+      <div class="h-sec">PROTOCOL // <b>PERSONA SYNC TEST</b></div>
+      <div class="hero-en">ASTRAL EXPRESS AFFINITY ANALYSIS</div>
+      <div class="hero-title">人格同步测试</div>
+      <p class="hero-desc">
+        你将回答 <b style="color:var(--amber)">50</b> 道情境题。系统会从
+        <b style="color:var(--amber)">10 个维度</b> 解析你的人格特征，
+        并与星穹铁道全部 <b style="color:var(--amber)">89 名</b>可玩角色逐一比对同步率，
+        找出与你最契合的三位搭档。
+      </p>
+      <div class="dims" id="dim-list"></div>
+      <button class="btn" id="btn-start">▶ 开始测试</button>
+      <button class="btn ghost" id="btn-roster" style="margin-left:12px">角色登记库</button>
+      <p class="note">
+        ※ 角色性格画像由官方角色档案、语音记录与剧情资料整理量化而来，仅供娱乐参考，与官方立场无关。<br>
+        ※ 题目作答无对错之分，请凭第一直觉选择。支持键盘 <b>1 / 2 / 3 / 4</b> 选项，<b>←</b> 上一题，<b>→</b> 下一题（需先作答）。
+      </p>
+    </div>
+  </section>
+
+  <!-- 答题页 -->
+  <section class="screen" id="scr-quiz">
+    <div class="panel corner">
+      <div class="q-meta">
+        <span>QUESTION <span class="q-num" id="q-no">01</span> / 50</span>
+        <span id="q-timer">SYNC-CORE RUNNING</span>
+      </div>
+      <div class="q-progress" id="q-bar"></div>
+      <div class="q-card">
+        <div class="h-sec">INPUT REQUIRED // <b>SELECT ONE</b></div>
+        <div class="q-text" id="q-text"></div>
+        <div class="opts" id="q-opts"></div>
+      </div>
+      <div class="q-foot">
+        <button class="btn ghost" id="btn-prev">← 上一题</button>
+        <span class="q-navhint">SELECT 1-4 · ARROW KEYS TO NAVIGATE</span>
+        <button class="btn" id="btn-next" style="display:none">下一题 →</button>
+        <button class="btn" id="btn-gen" style="display:none">■ 生成同步报告</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- 报告页 -->
+  <section class="screen" id="scr-result">
+    <div class="rep-head">
+      <div class="h-sec">REPORT GENERATED // <b>SYNC RESULT</b></div>
+      <h2>人格同步报告</h2>
+    </div>
+    <div class="rep-grid">
+      <div class="panel corner">
+        <div class="h-sec">YOUR PROFILE // <b>人格雷达</b></div>
+        <div class="radarbox" id="user-radar"></div>
+      </div>
+      <div class="panel corner bars" id="user-bars">
+        <div class="h-sec">DIMENSION BREAKDOWN // <b>十维解析</b></div>
+      </div>
+    </div>
+    <div class="top3" id="top3"></div>
+    <div class="rep-actions">
+      <button class="btn" id="btn-restart">↻ 重新测试</button>
+      <button class="btn ghost" id="btn-roster2">查看角色登记库</button>
+    </div>
+  </section>
+
+  <!-- 角色库 -->
+  <section class="screen" id="scr-roster">
+    <div class="panel corner">
+      <div class="h-sec">DATABASE // <b>89 PLAYABLE CHARACTERS</b></div>
+      <div style="font-size:20px;letter-spacing:3px;margin-bottom:6px">角色登记库</div>
+      <p style="font-size:12.5px;color:var(--dim);line-height:1.8">
+        收录截至4.6版本的全部可玩角色（含Fate[UBW]联动限定）。开拓者五种命途形态人格设定一致，合并收录。
+        点击卡片查看十维人格画像。
+      </p>
+      <div class="roster" id="roster-grid"></div>
+      <div style="margin-top:22px"><button class="btn ghost" id="btn-back">← 返回</button></div>
+    </div>
+  </section>
+
+  <footer>
+    ASTRAL EXPRESS PERSONA SYNC TERMINAL · FAN-MADE FOR ENTERTAINMENT<br>
+    角色资料整理自公开的官方档案与剧情文本 · 本测试结果不构成任何官方设定
+  </footer>
+</div>
+
+<!-- 角色详情弹窗 -->
+<div class="modal-mask" id="modal-mask">
+  <div class="modal" id="modal-box"></div>
+</div>
+
+<script>
+"use strict";
+/* ================= 数据 ================= */
+const DIMS = [
+  {k:"act", n:"行动力",  d:"果决执行，说干就干"},
+  {k:"rat", n:"理性思维", d:"逻辑冷静，先分析后行动"},
+  {k:"soc", n:"社交活力", d:"热衷与人相处，热络自来熟"},
+  {k:"rsp", n:"责任担当", d:"尽责可靠，一诺千金"},
+  {k:"cur", n:"好奇探索", d:"求知欲旺盛，想弄明白一切"},
+  {k:"ord", n:"秩序自律", d:"守规则，作息与计划性强"},
+  {k:"emp", n:"共情温柔", d:"敏锐体贴，先接住情绪"},
+  {k:"adv", n:"冒险精神", d:"追求刺激，敢于押注"},
+  {k:"grit",n:"意志坚韧", d:"抗压耐操，认准了不回头"},
+  {k:"exp", n:"情感表达", d:"喜怒外露，直话直说"}
+];
+
+/* 题目：dim 为维度下标，o 为选项[{s:该维度得分0-100, x:文案}] */
+const QBANK = [
+/* 行动力 */
+{dim:0,t:"列车正在跃迁，广播突然预警前方轨道出现未知障碍物。你的第一反应是？",o:[
+  {s:95,x:"立刻冲向驾驶室方向，边跑边了解情况"},
+  {s:70,x:"先确认警报等级和安全指示，再行动"},
+  {s:45,x:"观察乘员们的反应，跟着大家行动"},
+  {s:20,x:"先愣住，等情况明朗再说"}]},
+{dim:0,t:"你突然想到一个绝妙的点子（企划/礼物/改造方案），你会？",o:[
+  {s:90,x:"当场就动手，灵感不等人"},
+  {s:65,x:"先记进清单，规划好再开工"},
+  {s:40,x:"转告朋友，看有没有人一起"},
+  {s:15,x:"“下次一定”，然后下次也不一定"}]},
+{dim:0,t:"空间站站厅的自动门故障，一群人堵在门口。你会？",o:[
+  {s:85,x:"直接上前研究控制面板，尝试手动开门"},
+  {s:60,x:"帮忙维持秩序，联系维护人员"},
+  {s:40,x:"安静等维修，顺便刷刷终端"},
+  {s:15,x:"找别的通道绕过去，别耽误自己"}]},
+{dim:0,t:"「模拟宇宙」更新了全新拓展包，你的打开方式是？",o:[
+  {s:85,x:"第一时间冲进去，参数随便点先爽一局"},
+  {s:60,x:"研究一下新机制，选好阵容再进"},
+  {s:40,x:"等朋友组队喊我一起"},
+  {s:15,x:"不急，等我哪天有空再说"}]},
+{dim:0,t:"手机弹出提醒：限时活动还剩最后六小时。你会？",o:[
+  {s:85,x:"放下手头一切，先把奖励拿满"},
+  {s:60,x:"评估一下奖励价值，值得就肝"},
+  {s:40,x:"顺手做一点，做不完算了"},
+  {s:15,x:"错过就错过，佛系"}]},
+/* 理性思维 */
+{dim:1,t:"如果你面临一个改变人生轨迹的重大选择（换城市/换赛道），你会？",o:[
+  {s:90,x:"列利弊表、查资料、做沙盘推演"},
+  {s:65,x:"请教几位有经验的人，综合意见再定"},
+  {s:40,x:"跟着感觉走，直觉从不出错"},
+  {s:15,x:"拖到最后一刻，抛硬币决定"}]},
+{dim:1,t:"群里为了一件事吵翻了天，双方都言之凿凿。你会？",o:[
+  {s:85,x:"先查信源和原始资料，再决定信谁"},
+  {s:60,x:"把两边观点都看完，心里有数但不多说"},
+  {s:40,x:"凭印象和好感站队"},
+  {s:15,x:"情绪上头，直接下场开吵"}]},
+{dim:1,t:"规划一次长途旅行，你的行程单是？",o:[
+  {s:85,x:"精确到每个时间点，附备用方案"},
+  {s:60,x:"订好交通住宿，细节随机应变"},
+  {s:40,x:"只买票，到了再说"},
+  {s:15,x:"说走就走，路本身就是计划"}]},
+{dim:1,t:"朋友兴奋地说要把积蓄投进一个“稳赚不赔”的项目。你会？",o:[
+  {s:85,x:"帮他算风险和收益，用数据劝住他"},
+  {s:60,x:"郑重提醒一次，尊重他的决定"},
+  {s:40,x:"听着听着有点心动，一起研究"},
+  {s:15,x:"有钱一起赚，拉我入伙"}]},
+{dim:1,t:"一件你主导的事搞砸了，事后你会？",o:[
+  {s:90,x:"逐步复盘，找出流程里出错的那一环"},
+  {s:65,x:"找人复盘对齐认知，避免再犯"},
+  {s:40,x:"自责一会儿，然后翻篇"},
+  {s:15,x:"怪运气不好，不想再回想"}]},
+/* 社交活力 */
+{dim:2,t:"受邀参加一场大半个名单都是陌生人的聚会（比如偶像的后场茶会）。你会？",o:[
+  {s:90,x:"如鱼得水，散场时新好友加了一排"},
+  {s:65,x:"找聊得来的一两个人深聊"},
+  {s:40,x:"安静待在熟人旁边，偶尔搭话"},
+  {s:15,x:"中途找个借口先溜"}]},
+{dim:2,t:"群聊弹出 99+ 条未读消息，你会？",o:[
+  {s:85,x:"挨条爬完，忍不住插了好几嘴"},
+  {s:60,x:"挑重点看，有梗才回"},
+  {s:40,x:"只看@自己的那几条"},
+  {s:15,x:"免打扰，看心情再说"}]},
+{dim:2,t:"社团/项目要组队完成一个任务，你会？",o:[
+  {s:85,x:"主动张罗组队，顺便分配分工"},
+  {s:60,x:"有人喊就加入，安心当队员"},
+  {s:40,x:"被点名才参加，能划水就划水"},
+  {s:15,x:"申请单人作业，社恐保护机制启动"}]},
+{dim:2,t:"在活动现场遇到只想见过一次的人，你会？",o:[
+  {s:85,x:"主动上去打招呼，还能聊起上次的话题"},
+  {s:60,x:"对上视线会点头微笑"},
+  {s:40,x:"假装看别处，等对方先开口"},
+  {s:15,x:"默默绕开，就当没看见"}]},
+{dim:2,t:"好朋友连续三天没回你消息，你会？",o:[
+  {s:85,x:"继续发，第三天直接打电话查岗"},
+  {s:60,x:"再等等，可能在忙"},
+  {s:40,x:"不多想，等他哪天想起来"},
+  {s:15,x:"正好，我也懒得聊"}]},
+/* 责任担当 */
+{dim:3,t:"团队任务出了纰漏，其中有一部分是你的锅。你会？",o:[
+  {s:90,x:"第一时间承认自己那部分，然后补救"},
+  {s:70,x:"先补救，责任归属之后再说清楚"},
+  {s:45,x:"以补救为主，私下里嘀咕几句"},
+  {s:20,x:"说明客观原因——确实不全是我的问题"}]},
+{dim:3,t:"你随口答应帮别人的一件小事，你会？",o:[
+  {s:95,x:"写进待办清单，一定办到"},
+  {s:70,x:"尽力办到，办不到会提前打招呼"},
+  {s:45,x:"尽力而为，偶尔忘了也正常"},
+  {s:20,x:"看情况，随缘"}]},
+{dim:3,t:"轮到你值班的那天，恰好和朋友约了重要的事。你会？",o:[
+  {s:85,x:"提前协调换班，绝不让岗位空着"},
+  {s:60,x:"说明情况请人顶替，下次补回来"},
+  {s:40,x:"到时候再说，实在不行请假"},
+  {s:15,x:"私事最大，直接翘掉"}]},
+{dim:3,t:"你提交的成果被上级当面指出三处问题。你会？",o:[
+  {s:80,x:"当场认领，回去连夜修改"},
+  {s:60,x:"冷静沟通哪些能改，改完再对一次"},
+  {s:40,x:"内心不服，但先照做"},
+  {s:20,x:"觉得对方根本不懂行"}]},
+{dim:3,t:"刚入行的新人向你请教，你会？",o:[
+  {s:90,x:"手把手教到他自己能上手"},
+  {s:65,x:"指个大方向，剩下的靠他悟"},
+  {s:40,x:"甩给他一份资料，让他自己看"},
+  {s:15,x:"“我自己都忙不过来呢”"}]},
+/* 好奇探索 */
+{dim:4,t:"星图上有一片被标注为「未勘探」的区域，你的内心？",o:[
+  {s:90,x:"心痒难耐，想办法申请去看看"},
+  {s:65,x:"先查遍资料，搞清那里到底有什么"},
+  {s:40,x:"保持距离，看别人的勘探报告就好"},
+  {s:15,x:"无所谓，不影响我就行"}]},
+{dim:4,t:"一个完全陌生的知识领域突然和你的工作产生了交集。你会？",o:[
+  {s:85,x:"一头扎进去，从基础啃到前沿"},
+  {s:60,x:"挑需要的部分学，够用就好"},
+  {s:40,x:"刷到相关内容才顺便了解"},
+  {s:15,x:"交给专业的人，与我无关"}]},
+{dim:4,t:"朋友们聊起你完全不懂的领域，你会？",o:[
+  {s:85,x:"追着问东问西，直到弄明白"},
+  {s:60,x:"认真听，听不懂的地方记下来查"},
+  {s:40,x:"礼貌旁听，微笑点头"},
+  {s:15,x:"悄悄划走，找别的事做"}]},
+{dim:4,t:"你收到一个没有说明书的多功能装置。你会？",o:[
+  {s:90,x:"每个按钮都按一遍，不解构完不罢休"},
+  {s:65,x:"有空就研究，慢慢摸清功能"},
+  {s:40,x:"看懂一两个常用功能就收手"},
+  {s:15,x:"能开机就行，别折腾"}]},
+{dim:4,t:"面对一道无奖赏的谜题（比如密室墙上的一行小字），你会？",o:[
+  {s:90,x:"不解出来今晚别想睡"},
+  {s:65,x:"有空就琢磨琢磨"},
+  {s:40,x:"除非有人给我提示，否则算了"},
+  {s:15,x:"直接搜答案"}]},
+/* 秩序自律 */
+{dim:5,t:"一件没有截止日期、但迟早要做的事，你会？",o:[
+  {s:90,x:"自己设个期限，按期完成"},
+  {s:65,x:"心里有个大概节点，差不多就行"},
+  {s:40,x:"想起来才做"},
+  {s:15,x:"拖到彻底忘记它的存在"}]},
+{dim:5,t:"你的作息表长什么样？",o:[
+  {s:85,x:"基本固定，雷打不动"},
+  {s:60,x:"大体规律，偶尔熬夜例外"},
+  {s:40,x:"随缘，看当天状态"},
+  {s:15,x:"昼夜颠倒才是本体"}]},
+{dim:5,t:"你的桌面/房间现在是什么状态？",o:[
+  {s:85,x:"物归其位，井井有条"},
+  {s:60,x:"大致整齐，看得过去"},
+  {s:40,x:"乱中有序，我自己找得到就行"},
+  {s:15,x:"混沌邪恶，无处下脚"}]},
+{dim:5,t:"计划进行到一半被临时打乱，你会？",o:[
+  {s:80,x:"五分钟内重排计划，按新计划继续"},
+  {s:60,x:"略微烦躁，然后接受现实"},
+  {s:40,x:"无所谓，走哪算哪"},
+  {s:15,x:"本来就没有计划"}]},
+{dim:5,t:"对规则和流程，你的态度是？",o:[
+  {s:85,x:"先按规则来，有异议走流程提出"},
+  {s:60,x:"合理的遵守，不合理的绕开"},
+  {s:40,x:"规则仅供参考"},
+  {s:15,x:"规则存在的意义就是被打破"}]},
+/* 共情温柔 */
+{dim:6,t:"深夜朋友突然发来一句“在吗，有点emo”。你会？",o:[
+  {s:90,x:"秒回，先接住情绪，陪聊到好转"},
+  {s:65,x:"认真听完全程，再给建议"},
+  {s:40,x:"讲道理为主，情绪自己消化吧"},
+  {s:15,x:"明早再回，先睡为敬"}]},
+{dim:6,t:"你注意到新同事总是一个人吃饭。你会？",o:[
+  {s:85,x:"主动约他一起，带他认识大家"},
+  {s:60,x:"私下多照顾他，不强求他合群"},
+  {s:40,x:"心里心疼，但不知道怎么开口"},
+  {s:15,x:"各人有各人的选择"}]},
+{dim:6,t:"身边人的情绪波动，你通常？",o:[
+  {s:90,x:"一眼察觉，常常比对方开口还早"},
+  {s:70,x:"细心的话能察觉"},
+  {s:45,x:"被提醒后才能察觉"},
+  {s:20,x:"迟钝得像块铁皮"}]},
+{dim:6,t:"路上遇到需要帮忙的陌生人，你会？",o:[
+  {s:85,x:"不计回报，顺手就帮"},
+  {s:60,x:"力所能及的范围内会帮"},
+  {s:40,x:"看情况，先评估风险"},
+  {s:15,x:"照顾好自己已经竭尽全力了"}]},
+{dim:6,t:"朋友倾诉的负能量太多，你自己也开始发沉。你会？",o:[
+  {s:80,x:"先撑住，继续接住他"},
+  {s:60,x:"边听边调整自己，找平衡"},
+  {s:40,x:"开始回复变慢，悄悄回避"},
+  {s:15,x:"直接说：别再找我了"}]},
+/* 冒险精神 */
+{dim:7,t:"过山车、深空蹦极、未知星域跳伞——你的态度是？",o:[
+  {s:90,x:"排队也要玩，最好再来一次"},
+  {s:65,x:"试一次，体验过就行"},
+  {s:40,x:"有人陪就试试，没人陪算了"},
+  {s:15,x:"别拉我，我腿已经软了"}]},
+{dim:7,t:"一个改变现状的大机会摆在面前，但风险对半开。你会？",o:[
+  {s:85,x:"心动了就押上去，赢了再说"},
+  {s:60,x:"做好最坏打算的兜底，就敢跳"},
+  {s:40,x:"稳定优先，机会以后还有"},
+  {s:15,x:"求求了，别动我的安稳日子"}]},
+{dim:7,t:"面对“未知但诱人”的选项，你的第一感受？",o:[
+  {s:85,x:"越未知越兴奋"},
+  {s:60,x:"好奇，但先做足功课"},
+  {s:40,x:"本能想选熟悉的那个"},
+  {s:15,x:"未知=危险，拒绝"}]},
+{dim:7,t:"一个人去完全陌生的地方生活半年，你会？",o:[
+  {s:90,x:"兴奋大于不安，行李今天就开始收拾"},
+  {s:65,x:"做好功课就不怕"},
+  {s:40,x:"有人同行最好，一个人有点慌"},
+  {s:15,x:"想想就开始焦虑"}]},
+{dim:7,t:"胜率五五开的赌局，赌注是你半年积蓄。你会？",o:[
+  {s:85,x:"全押，赌就赌个痛快"},
+  {s:60,x:"小赌怡情，押一小部分"},
+  {s:40,x:"只赌完全输得起的零头"},
+  {s:15,x:"从不参赌，告辞"}]},
+/* 意志坚韧 */
+{dim:8,t:"同一件事你连续失败了七次，第八次你会？",o:[
+  {s:90,x:"复盘优化，接着来第八次"},
+  {s:70,x:"换个思路，继续尝试"},
+  {s:45,x:"先歇几天，缓缓再战"},
+  {s:20,x:"大概率会放弃了"}]},
+{dim:8,t:"你的能力被人当众否定，你会？",o:[
+  {s:85,x:"不动声色，之后用结果说话"},
+  {s:65,x:"有情绪，但目标不动摇"},
+  {s:45,x:"难受好一阵才能缓过来"},
+  {s:20,x:"开始怀疑自己是不是真不行"}]},
+{dim:8,t:"一项枯燥但重要的长期坚持（训练/学习/锻炼），你会？",o:[
+  {s:85,x:"靠习惯和日程撑到底"},
+  {s:60,x:"定期给自己发奖励，续命式坚持"},
+  {s:40,x:"三分钟热度，循环往复"},
+  {s:15,x:"坚持？坚持不了一点"}]},
+{dim:8,t:"项目冲刺/考试周的高压期，你的状态？",o:[
+  {s:85,x:"越压越稳，火力全开"},
+  {s:65,x:"累，但咬牙能扛住"},
+  {s:40,x:"勉强撑住，效率打折"},
+  {s:15,x:"先崩为敬"}]},
+{dim:8,t:"身体不舒服，但手头还有要紧的事。你会？",o:[
+  {s:75,x:"缓一缓，做完再休息"},
+  {s:60,x:"带病坚持，但主动降速"},
+  {s:45,x:"立刻休息，健康第一"},
+  {s:20,x:"直接躺平，事算什么"}]},
+/* 情感表达 */
+{dim:9,t:"遇到特别开心的事，你会？",o:[
+  {s:90,x:"全世界都该知道，大声分享"},
+  {s:65,x:"主动讲给在乎的人听"},
+  {s:40,x:"自己偷着乐"},
+  {s:15,x:"脸上毫无波澜"}]},
+{dim:9,t:"对某个人或某件事不满，你会？",o:[
+  {s:85,x:"当场说清楚，对事不对人"},
+  {s:60,x:"找机会私下沟通"},
+  {s:40,x:"忍着，但全写在脸上"},
+  {s:15,x:"忍着，装作没事"}]},
+{dim:9,t:"想感谢/喜欢一个人时，你会？",o:[
+  {s:85,x:"大大方方说出来"},
+  {s:60,x:"用行动和礼物表示"},
+  {s:40,x:"疯狂暗示，等对方懂"},
+  {s:15,x:"深藏功与名"}]},
+{dim:9,t:"情绪低落的时候，你会？",o:[
+  {s:85,x:"找人倾诉，说出来就好了"},
+  {s:60,x:"找信任的一两个人聊聊"},
+  {s:40,x:"独自消化，不想说话"},
+  {s:15,x:"谁也看不出来"}]},
+{dim:9,t:"你的社交动态（朋友圈/空间）是什么画风？",o:[
+  {s:80,x:"想发就发，条条鲜活"},
+  {s:60,x:"只分享里程碑和干货"},
+  {s:40,x:"半年一更，年度总结"},
+  {s:15,x:"纯观影模式，从不发"}]}
+];
+
+/* 角色库：vec 依序为 [行动力,理性,社交,责任,好奇,秩序,共情,冒险,坚韧,表达]
+   画像基于官方角色档案/语音/剧情资料整理量化（截至4.6版本，开拓者五命途形态合并收录） */
+const CHARS = [
+{name:"开拓者",en:"TRAILBLAZER",fac:"星穹列车",cls:"多属性 · 五命途",rar:5,
+ kw:["铁皮体质","吃货","吐槽役","直觉离谱","行动派"],
+ line:"从坠轨废墟里被捡上车的列车新成员。（五命途形态人格一致，合并收录）",
+ quote:"【语音大意】出发吧，目标是群星",
+ desc:"官方漫画与主线里的“团宠兼吐槽役”，脸接陨石都不带坏的。对垃圾桶和食物有超越常人的执念，直觉经常离谱地精准。毁灭/存护/同谐/记忆/欢愉五种命途形态人格设定一致。",
+ vec:[80,45,75,70,80,35,70,75,90,85]},
+{name:"三月七",en:"MARCH 7TH",fac:"星穹列车",cls:"冰 · 存护",rar:4,
+ kw:["元气乐观","好奇爆棚","自拍狂魔","心软念旧"],
+ line:"从冰块里苏醒的少女，全队专属摄影师。",
+ quote:"【语音大意】三月七，保护大家",
+ desc:"用自己的名字给失忆前的自己留了空位，用相机记录一切“怕忘了的重要时刻”。活泼爱闹，但对自己的过去始终留着一块柔软的角落。",
+ vec:[72,50,85,70,85,55,85,65,75,90]},
+{name:"三月七·巡猎",en:"MARCH 7TH HUNT",fac:"星穹列车",cls:"虚数 · 巡猎",rar:4,
+ kw:["剑意初成","热血成长","护友执念","不服输"],
+ line:"提剑修行的新三月，御剑护同伴。",
+ quote:"【语音大意】这一剑，为了大家",
+ desc:"三月七的成长形态：从躲在人后的摄影师，变成御剑在前的小剑客。成长的不止是武器，还有“想保护大家”的心。",
+ vec:[85,55,75,75,65,45,80,75,80,90]},
+{name:"丹恒",en:"DAN HENG",fac:"星穹列车",cls:"风 · 巡猎",rar:4,
+ kw:["冷面热心","寡言护队","背负过去","典籍控"],
+ line:"列车档案员，拒绝承认自己是龙。",
+ quote:"【语音大意】别拖后腿",
+ desc:"沉默寡言却总在关键时刻站在最前。把过去封进枪杆和数据库，用“现在”的身份重新出发；嘴上嫌弃，行动里全是照顾。",
+ vec:[70,75,35,80,55,75,60,50,85,25]},
+{name:"姬子",en:"HIMEKO",fac:"星穹列车",cls:"火 · 智识",rar:5,
+ kw:["温柔成熟","冒险浪漫","咖啡成瘾","亦师亦友"],
+ line:"修复列车的领航员，把异乡人请上车的人。",
+ quote:"【语音大意】来杯咖啡，慢慢说",
+ desc:"年少时在荒芜星球仰望星空，长大后亲手修复了列车。像恒星一样稳稳托住整支队伍，也是所有人心里“家”的形状。",
+ vec:[65,80,70,75,85,65,80,75,85,65]},
+{name:"瓦尔特",en:"WELT",fac:"星穹列车",cls:"虚数 · 虚无",rar:5,
+ kw:["稳重慈父","深藏不露","责任如山","隐藏老宅男"],
+ line:"前逆熵领袖，列车上最可靠的“长辈”。",
+ quote:"【语音大意】接下来的路，交给我",
+ desc:"曾经力挽狂澜拯救世界的英雄，如今把力量收进礼帽与手杖。讲得出一整套动画创作理论，也扛得住一切危机。",
+ vec:[60,90,55,90,60,75,75,45,90,45]},
+{name:"阿兰",en:"ARLAN",fac:"黑塔空间站",cls:"雷 · 毁灭",rar:4,
+ kw:["寡言尽职","少年老成","护站如命","与佩佩相依"],
+ line:"安保部长，话不多但从不后退。",
+ quote:"【语音大意】佩佩，跟我上",
+ desc:"年纪最小却扛起整个空间站的安保。不爱说话，习惯把关心藏在对佩佩的絮叨里；危险来时，他永远挡在其他人前面。",
+ vec:[75,55,30,85,50,70,70,55,80,30]},
+{name:"艾丝妲",en:"ASTA",fac:"黑塔空间站",cls:"火 · 同谐",rar:4,
+ kw:["大小姐热心","行动力强","护星成癖","甜食控"],
+ line:"站长助理，把全站的人宠成家人。",
+ quote:"【语音大意】大家的事就是我的事",
+ desc:"家族富可敌国，她却偏偏爱上望远镜里的星空。用行动力和甜食把整个空间站黏在一起，嘴上抱怨花钱，手上从没停过。",
+ vec:[80,60,90,80,70,55,85,60,70,85]},
+{name:"黑塔",en:"HERTA",fac:"黑塔空间站",cls:"冰 · 智识",rar:4,
+ kw:["天才傲慢","毒舌","恶趣味","真身摸鱼"],
+ line:"天才俱乐部#83，用傀儡替身办公的慵懒天才。",
+ quote:"【语音大意】无聊，无聊透了",
+ desc:"空间站真正的所有者，却只派傀儡出面。对一切“无趣”零容忍，把宇宙当课题；真身出手时，全世界都要给天才让路。",
+ vec:[45,95,40,40,90,50,25,55,75,70]},
+{name:"大黑塔",en:"THE HERTA",fac:"黑塔空间站",cls:"冰 · 智识",rar:5,
+ kw:["绝对自负","随心所欲","厌烦琐务","只为有趣弯腰"],
+ line:"傀儡背后的本尊，耐心同样限量供应。",
+ quote:"【语音大意】能亲眼见证本座，是你的荣幸",
+ desc:"天才俱乐部第83席真身降临。“无聊是她唯一的死罪”——她为有趣而来，也为有趣而战，顺便拯救世界。",
+ vec:[55,98,45,45,95,40,20,65,80,75]},
+{name:"布洛妮娅",en:"BRONYA",fac:"贝洛伯格",cls:"风 · 同谐",rar:5,
+ kw:["自律苛刻","责任过载","外冷内热","一诺千金"],
+ line:"从执棒养女到守护大地的继承人。",
+ quote:"【语音大意】为了贝洛伯格的未来",
+ desc:"从小被当作继承人来培养，把责任刻进骨子里。学会“违抗命令”那天，她才真正长大——为了更重要的人。",
+ vec:[75,85,55,95,55,95,70,45,85,50]},
+{name:"杰帕德",en:"GEPARD",fac:"贝洛伯格",cls:"冰 · 存护",rar:5,
+ kw:["一板一眼","憨直可靠","责任如山","兄长担当"],
+ line:"堡垒前的冰墙，绝不后退一步的队长。",
+ quote:"【语音大意】我不会退后半步",
+ desc:"银鬃铁卫的荣誉与担当的化身。恪守纪律到近乎笨拙，却会在妹妹面前露出笨拙的温柔。",
+ vec:[70,70,55,95,45,90,75,40,90,45]},
+{name:"希露瓦",en:"SERVAL",fac:"贝洛伯格",cls:"雷 · 智识",rar:4,
+ kw:["摇滚不羁","机械天才","率性吐槽","前军官"],
+ line:"白天开机械屋，晚上开演唱会的姐姐。",
+ quote:"【语音大意】让音乐点燃你们",
+ desc:"前银鬃铁卫军官，现为机械屋老板兼摇滚主唱。用扳手和吉他把钢铁之城的沉默敲出声浪。",
+ vec:[75,75,75,60,80,40,70,65,75,85]},
+{name:"佩拉",en:"PELA",fac:"贝洛伯格",cls:"冰 · 虚无",rar:4,
+ kw:["情报控","心思缜密","乖乖皮","推理迷"],
+ line:"童颜情报官，战场推演从未失手。",
+ quote:"【语音大意】情报确认，按计划行动",
+ desc:"铁卫情报官，脑子里装着整座城市的部署。摘下军帽就是个推理小说狂热爱好者——顺便用观察与推理默默记下每个人的秘密。",
+ vec:[65,90,50,80,75,85,60,45,75,55]},
+{name:"娜塔莎",en:"NATASHA",fac:"贝洛伯格",cls:"物理 · 丰饶",rar:4,
+ kw:["医者仁心","大姐头","温柔坚韧","藏锋于袖"],
+ line:"下层区诊所医生，黑白两道都敬三分。",
+ quote:"【语音大意】别怕，很快就会好",
+ desc:"下层区的“大家长”，诊所在黑暗里点着一盏灯。温柔是她的选择，而非软弱——她比谁都清楚这条街的规矩。",
+ vec:[70,80,75,85,55,70,90,50,90,55]},
+{name:"希儿",en:"SEELE",fac:"贝洛伯格",cls:"量子 · 巡猎",rar:5,
+ kw:["泼辣果决","刀子嘴豆腐心","护弱","行动派"],
+ line:"下层区地火的蝶刃，先动手再讲理。",
+ quote:"【语音大意】少啰嗦，速战速决",
+ desc:"在下层区的黑暗里长大，所以见不得别人受欺负。雷厉风行，说话带刺，心却比谁都软。",
+ vec:[90,55,65,75,50,45,75,70,85,80]},
+{name:"克拉拉",en:"CLARA",fac:"贝洛伯格",cls:"物理 · 毁灭",rar:5,
+ kw:["温软坚定","早熟懂事","以德报怨"],
+ line:"史瓦罗的家人，下层区的小小守护者。",
+ quote:"【语音大意】史瓦罗，拜托了",
+ desc:"用最轻的声音说最坚定的话。她记得每一个伤害过她的人，也记得每一个帮助过她的人——然后选择温柔。",
+ vec:[45,60,45,70,55,60,85,30,80,35]},
+{name:"桑博",en:"SAMPO",fac:"贝洛伯格",cls:"风 · 虚无",rar:4,
+ kw:["油滑市侩","见风使舵","来路成谜","关键靠谱"],
+ line:"什么都能卖的滑头商人，朋友遍布地下。",
+ quote:"【语音大意】都是老朋友，帮个忙呗",
+ desc:"情报、货物、人情，什么都倒得一手好卖。看似只认钱，但关键场次从不掉链子——就是事后一定要讨价还价。",
+ vec:[70,70,85,40,60,35,45,70,70,75]},
+{name:"虎克",en:"HOOK",fac:"贝洛伯格",cls:"火 · 毁灭",rar:4,
+ kw:["中二逞强","天真善良","要面子","渴望认可"],
+ line:"自封“虎克大人”的下层区小霸王。",
+ quote:"【语音大意】虎克大人，登场",
+ desc:"摩罗街的“机器之火”，自封大王，实则是个想被夸奖的小孩。逞强是面子，善良是里子。",
+ vec:[85,35,80,65,70,30,75,70,65,95]},
+{name:"玲可",en:"LYNX",fac:"贝洛伯格",cls:"量子 · 丰饶",rar:4,
+ kw:["淡然天然黑","登山控","随性佛系","兰家幺妹"],
+ line:"兰道家最淡定的极地登山少女。",
+ quote:"【语音大意】山上冷，快点解决",
+ desc:"兰家最咸鱼的小妹，说话慢半拍但句句戳心窝。雪山是她的主场，佛系是她的体质。",
+ vec:[60,65,50,70,65,60,70,55,75,50]},
+{name:"卢卡",en:"LUKA",fac:"贝洛伯格",cls:"物理 · 虚无",rar:4,
+ kw:["热血莽直","格斗狂热","乐观豁达","独臂强者"],
+ line:"独臂拳王，用拳头回应命运。",
+ quote:"【语音大意】来，痛快打一场",
+ desc:"在搏击大会上打出一身名气的独臂青年。输了会笑着约再战，赢了会把奖金分给街坊。",
+ vec:[85,45,80,70,55,40,70,75,85,90]},
+{name:"景元",en:"JING YUAN",fac:"仙舟罗浮",cls:"雷 · 智识",rar:5,
+ kw:["表面慵懒","算无遗策","宽厚御下","老谋深算"],
+ line:"“闭眼将军”，躺椅上落子的罗浮主帅。",
+ quote:"【语音大意】神君，随我出战",
+ desc:"平日眯眼养神、逗鸟赏雪，棋盘之外早算了十步。数百年的岁月教会他等待——等待时局自己走进掌心。",
+ vec:[55,95,65,90,60,60,75,50,85,60]},
+{name:"彦卿",en:"YANQING",fac:"仙舟罗浮",cls:"冰 · 巡猎",rar:5,
+ kw:["剑痴少年","天资卓绝","争强好胜","单纯直率"],
+ line:"罗浮第一剑，同辈中的天之骄子。",
+ quote:"【语音大意】请赐教",
+ desc:"铸剑、藏剑、练剑，人生目标简单纯粹：变强。偶尔输不起的小表情，是他少年心气的最好证明。",
+ vec:[80,60,60,75,70,65,55,70,75,70]},
+{name:"素裳",en:"SUSHANG",fac:"仙舟罗浮",cls:"物理 · 巡猎",rar:4,
+ kw:["侠义漫画脑","热血上头","路见不平","新兵莽劲"],
+ line:"把行侠仗义当理想的云骑新兵。",
+ quote:"【语音大意】云骑素裳，前来相助",
+ desc:"满脑子侠客话本的新兵，遇到不平事热血先冲。莽是真莽，正义感也是真金白银的。",
+ vec:[85,40,75,70,65,50,75,65,70,85]},
+{name:"青雀",en:"QINGQUE",fac:"仙舟罗浮",cls:"量子 · 智识",rar:4,
+ kw:["摸鱼成瘾","麻将至上","大智若愚","能躺不坐"],
+ line:"太卜司摸鱼修士，上班摸牌两开花。",
+ quote:"【语音大意】等我把这把牌摸完",
+ desc:"帝弓七天将之位摆面前都嫌累。牌桌上的天胡少女，把“能坐着绝不站着”贯彻到底——关键时刻却总能擦出点奇迹。",
+ vec:[30,80,55,45,55,20,65,40,60,60]},
+{name:"停云",en:"TINGYUN",fac:"仙舟罗浮",cls:"雷 · 同谐",rar:4,
+ kw:["八面玲珑","体贴周到","吉祥话连篇","真身成谜"],
+ line:"谁都爱听的使节，笑脸背后藏玄机。",
+ quote:"【语音大意】贵人福气多多，好事连连",
+ desc:"天舶司持珮使节，生意场上滴水不漏的吉祥话大师。温柔得体的笑容背后，是谁也看不透的心思。",
+ vec:[60,70,90,75,55,65,80,45,70,80]},
+{name:"白露",en:"BAILU",fac:"仙舟罗浮",cls:"雷 · 丰饶",rar:5,
+ kw:["小大人做派","悬壶济世","软萌坚定","龙族使命"],
+ line:"个子最小的神医，望闻问切样样在行。",
+ quote:"【语音大意】药到病除，不必担心",
+ desc:"龙尊之躯装着一颗行医济世的仁心。嘴上念着医嘱要病人忌口，转头自己偷吃点心被抓包。",
+ vec:[65,70,70,85,60,75,85,45,75,70]},
+{name:"罗刹",en:"LUOCHA",fac:"仙舟罗浮",cls:"虚数 · 丰饶",rar:5,
+ kw:["温文尔雅","滴水不漏","深不可测","身负棺材"],
+ line:"微笑行医的神秘商旅，棺中藏着秘密。",
+ quote:"【语音大意】见死不救，非医者所为",
+ desc:"白衣商旅背着棺材行医救人，礼貌得无懈可击。他说的每句真话都像谜语，每步棋都另有深意。",
+ vec:[60,85,70,70,60,70,75,50,85,55]},
+{name:"驭空",en:"YUKONG",fac:"仙舟罗浮",cls:"虚数 · 同谐",rar:4,
+ kw:["外冷内热","严于律己","念旧重情","重拾弓弦"],
+ line:"天舶司司正，为亡友重新拉弓的女将。",
+ quote:"【语音大意】孩子，展翅高飞吧",
+ desc:"前云骑军神射，收弓多年只为孩子放下牵挂。再次举弓那刻，箭矢仍是当年模样。",
+ vec:[65,80,50,90,50,85,75,45,85,45]},
+{name:"符玄",en:"FU XUAN",fac:"仙舟罗浮",cls:"量子 · 存护",rar:5,
+ kw:["自信毒舌","傲娇","责任极重","天机在握"],
+ line:"太卜司首座，行走人间的天机盘。",
+ quote:"“卦不敢算尽，畏天道无常。”",
+ desc:"天生能窥见因果轨迹，却始终背负“算尽天下”的重担。毒舌是保护色，肩上担着的是整个罗浮的安危。",
+ vec:[70,92,55,95,65,85,60,50,85,70]},
+{name:"刃",en:"BLADE",fac:"星核猎手",cls:"风 · 毁灭",rar:5,
+ kw:["求死不得","寡言狠戾","旧执如疤","痛而不亡"],
+ line:"不死之身，把死亡当作解脱的剑客。",
+ quote:"【语音大意】这具身体，就是刑期",
+ desc:"不死是恩赐也是刑罚。他记着旧友的影子，握着断成两截的剑，在漫长的刑期里寻找一个终点。",
+ vec:[75,60,20,55,35,40,30,60,95,25]},
+{name:"镜流",en:"JINGLIU",fac:"仙舟旧部",cls:"冰 · 毁灭",rar:5,
+ kw:["月下疯剑","孤高严师","执念深种","天人渐衰"],
+ line:"失明剑首，斩尽同门也斩不断过往。",
+ quote:"【语音大意】月光之下，剑无生死",
+ desc:"曾是罗浮剑首，因魔阴身而失明。她斩断师门、斩断旧名，唯独斩不断剑心——剑光所指，皆是执念。",
+ vec:[85,70,25,70,45,55,40,70,95,40]},
+{name:"丹恒·饮月",en:"DAN HENG IL",fac:"星穹列车",cls:"虚数 · 毁灭",rar:5,
+ kw:["前尘翻涌","自赎担当","内敛爆发","双面身份"],
+ line:"承认过去的自己，以饮月之名重临。",
+ quote:"【语音大意】龙，听我号令",
+ desc:"当丹恒承认“丹枫”也是自己，饮月龙尊便真正醒来。冷静的青年与远古的龙魂共用一副躯壳，把赎罪走成了担当。",
+ vec:[75,75,45,85,50,70,70,60,90,40]},
+{name:"桂乃芬",en:"GUINAIFEN",fac:"仙舟罗浮",cls:"火 · 虚无",rar:4,
+ kw:["异乡网红","搞钱第一","厚脸皮","苦中作乐"],
+ line:"仙舟街头顶流“小桂子”，绝活是吞火。",
+ quote:"【语音大意】老铁们，看好了",
+ desc:"跨越半个星海来仙舟讨生活的街头艺人。镜头前元气满满，镜头后咬着牙也要给家里人打钱。",
+ vec:[80,50,85,60,60,40,70,65,75,90]},
+{name:"藿藿",en:"HUOHUO",fac:"仙舟罗浮",cls:"风 · 丰饶",rar:5,
+ kw:["胆小怕鬼","善良坚韧","易受惊","努力克服恐惧"],
+ line:"怕鬼的狐人猎妖人，带着作妖的尾巴。",
+ quote:"【语音大意】尾、尾巴，不许乱来",
+ desc:"一边哭一边把猎妖任务做完的胆小鬼。尾巴大爷天天怂恿她搞事，而她每次都嘴上拒绝、身体诚实。",
+ vec:[55,55,55,80,55,65,85,35,80,60]},
+{name:"雪衣",en:"XUEYI",fac:"仙舟罗浮",cls:"量子 · 毁灭",rar:4,
+ kw:["偃偶之躯","执法如仪","寡言","向往人间烟火"],
+ line:"十王司“拘”判官，借还阳感受人间。",
+ quote:"【语音大意】罪证确凿，拿人",
+ desc:"偃偶之躯，铁面执法。她记不住味道，尝不出冷热，却偷偷向往着“活着”的每一件小事。",
+ vec:[70,75,30,90,55,85,60,40,80,30]},
+{name:"寒鸦",en:"HANYA",fac:"仙舟罗浮",cls:"物理 · 同谐",rar:4,
+ kw:["冷静克制","明察秋毫","笔耕判词","隐忍共情"],
+ line:"十王司判官，把众生罪业写成判词。",
+ quote:"【语音大意】罪状，记录在案",
+ desc:"以笔为刀，将罪业量化成判词。看着冷冰冰，实际比谁都懂“恶”背后的身不由己。",
+ vec:[60,88,40,85,65,85,65,40,80,35]},
+{name:"阮·梅",en:"RUAN MEI",fac:"博识学会",cls:"冰 · 同谐",rar:5,
+ kw:["优雅疏离","科研偏执","以造物为乐","糕点控"],
+ line:"温室里培育生命的学者，礼貌又危险。",
+ quote:"【语音大意】生命之美，值得一生长究",
+ desc:"天才俱乐部第81席。她能培育出优雅的生命，也会在点心与造物之间，冷静地越过所有伦理的边界。",
+ vec:[55,95,45,70,95,70,40,50,80,45]},
+{name:"银枝",en:"ARGENTI",fac:"纯美骑士团",cls:"物理 · 智识",rar:5,
+ kw:["纯美信徒","修辞华丽","赤诚自恋","浪漫骑士"],
+ line:"把“纯美”举过头顶的独行骑士。",
+ quote:"【语音大意】美，是值得用生命捍卫之物",
+ desc:"以“爱美”之名行走银河的骑士。自恋得理直气壮，浪漫得一丝不苟，忠诚得感人肺腑。",
+ vec:[70,50,75,80,55,60,75,60,85,90]},
+{name:"托帕&账账",en:"TOPAZ & NUMBY",fac:"星际和平公司",cls:"火 · 巡猎",rar:5,
+ kw:["精算务实","职业乐观","爱财有道","人宠搭档"],
+ line:"战略投资部督导，带着账账追债的精英。",
+ quote:"【语音大意】欠款回收，双赢为上",
+ desc:"公司最年轻的SPC督导，追债都追求“双赢”。账账嗅得出资产的味道，她嗅得出每个烂账背后的人心。",
+ vec:[75,85,75,80,60,75,60,60,80,75]},
+{name:"真理医生",en:"DR. RATIO",fac:"星际和平公司",cls:"虚数 · 巡猎",rar:5,
+ kw:["傲慢毒舌","学者","科普强迫","直言不讳"],
+ line:"智识信徒，立志提升“庸众”的智慧。",
+ quote:"【语音大意】愚蠢，才是最大的恶疾",
+ desc:"维里塔斯·拉帝奥，万体医师。毒舌是真毒舌，但每一句嘲讽背后，都是恨铁不成钢的“期望你们学会思考”。",
+ vec:[55,97,40,75,90,65,35,45,85,75]},
+{name:"银狼",en:"SILVER WOLF",fac:"星核猎手",cls:"量子 · 虚无",rar:5,
+ kw:["游戏宅","骇客少女","懒散","冰淇淋至上"],
+ line:"把宇宙当游戏通关的传奇骇客。",
+ quote:"【语音大意】这局，我先把服务器黑了",
+ desc:"万能骇客，眼里全世界都是游戏：城市是关卡，敌人是小怪，人际关系是支线。懒得通关的时候，就瘫着打联机。",
+ vec:[60,90,45,55,80,45,50,55,70,65]},
+{name:"卡芙卡",en:"KAFKA",fac:"星核猎手",cls:"雷 · 虚无",rar:5,
+ kw:["优雅神秘","母性危险","我行我素","真伪莫辨"],
+ line:"拨动琴弦与心弦的星核猎手。",
+ quote:"【语音大意】别怕，我从不骗人——大概",
+ desc:"悬赏令上的大牌罪犯，却总在关键时刻“顺路”救你。她说的话一半是谜，做的事一半是局，唯独对小家伙们出奇地温柔。",
+ vec:[70,85,65,60,65,40,55,75,90,60]},
+{name:"黄泉",en:"ACHERON",fac:"自灭者",cls:"雷 · 虚无",rar:5,
+ kw:["失忆漂泊","话少而重","宿命决绝","独行"],
+ line:"一人成军的剑士，走在无人之路上。",
+ quote:"【语音大意】这条路，我已经走了很久",
+ desc:"自称银河游侠的流浪剑客，忘却姓名与来路。以“无”为名，斩“有”之物——她走过的地方，虚无从脚下生长。",
+ vec:[80,60,25,70,40,35,60,70,95,30]},
+{name:"黑天鹅",en:"BLACK SWAN",fac:"流光忆庭",cls:"风 · 虚无",rar:5,
+ kw:["优雅神秘","旁观者自居","记忆掌控","温柔有边界"],
+ line:"指尖编织记忆的忆者，越亲近越看不清她。",
+ quote:"【语音大意】记忆如丝线，在我指尖缠绕",
+ desc:"忆庭的织梦者，把他人的人生当画卷收藏。她温柔地倾听一切，却不轻易让任何人走进自己的卷轴。",
+ vec:[55,90,60,60,85,60,65,55,85,55]},
+{name:"花火",en:"SPARKLE",fac:"假面愚者",cls:"量子 · 同谐",rar:5,
+ kw:["疯批戏精","真伪难辨","以混乱为乐","面具藏真心"],
+ line:"台上疯癫的戏法师，把别人的痛苦当烟花点。",
+ quote:"【语音大意】人生如戏，全靠演技",
+ desc:"假面愚者的王牌演员。今天演盟友，明天演反派，唯独“有趣”是她唯一的剧本——面具下偶尔闪过的真心，比戏更难猜。",
+ vec:[75,85,80,35,70,15,35,85,80,95]},
+{name:"米沙",en:"MISHA",fac:"匹诺康尼",cls:"冰 · 毁灭",rar:4,
+ kw:["天真烂漫","早熟懂事","向往星海","告别式温柔"],
+ line:"白日梦酒店小门童，藏着星海尽头的梦。",
+ quote:"【语音大意】愿我们都能去看看星海的尽头",
+ desc:"把“欢迎光临”挂在嘴边的小门童，攒着每一枚硬币和每一张星图。他的梦想朴素又宏大：去看看星海的尽头。",
+ vec:[60,55,65,75,70,60,85,55,70,70]},
+{name:"加拉赫",en:"GALLAGHER",fac:"匹诺康尼",cls:"火 · 丰饶",rar:4,
+ kw:["圆滑世故","话半真半假","痞气务实","知情不言"],
+ line:"吊儿郎当的老练保安，连自己都是谜面。",
+ quote:"【语音大意】梦里梦外，有事找我",
+ desc:"梦境安保队的老油条，口头禅式敷衍里藏着门道。他查案查到最后发现，谜底竟然是自己。",
+ vec:[65,75,70,65,55,45,65,55,75,60]},
+{name:"砂金",en:"AVENTURINE",fac:"星际和平公司",cls:"虚数 · 存护",rar:5,
+ kw:["赌徒哲学","孤勇假面","出身泥沼","逆天改命"],
+ line:"把人生当赌桌的战略投资部精英。",
+ quote:"【语音大意】赌局开场，先押上我自己",
+ desc:"欧利宝的卡牌既是他的武器也是他的命。从砂砾般的出身爬到聚光灯下，他赢的每一局，都是和命运的豪赌。",
+ vec:[75,88,75,70,60,40,50,90,90,70]},
+{name:"知更鸟",en:"ROBIN",fac:"匹诺康尼",cls:"物理 · 同谐",rar:5,
+ kw:["温柔坚韧","公众偶像","真性情","理想主义"],
+ line:"用歌声缝合梦之国度的偶像。",
+ quote:"官方歌曲《若我能使一颗心免于破碎》",
+ desc:"聚光灯下的完美歌姬，私下里有不低头的脊梁。她的歌不为家族而唱，为的是“让每一颗心不再破碎”。",
+ vec:[55,70,80,85,60,75,85,50,80,75]},
+{name:"波提欧",en:"BOOT HILL",fac:"银河游侠",cls:"物理 · 巡猎",rar:5,
+ kw:["豪爽粗野","义贼式正义","血债执念","外糙内痛"],
+ line:"全身义体的赏金牛仔，用最野的嘴讲最痛的仇。",
+ quote:"【语音大意】这颗子弹，我会亲自送达",
+ desc:"满嘴“老铁”的赛博牛仔，脏话过滤器是全银河最先进的义体。枪上的每一道刻痕，都是没来得及道别的人。",
+ vec:[85,60,70,80,50,40,65,75,90,95]},
+{name:"流萤",en:"FIREFLY",fac:"星核猎手",cls:"火 · 毁灭",rar:5,
+ kw:["梦中温柔","装甲杀伐","向死而生","炽热执拗"],
+ line:"机甲是枷锁也是翅膀，赴死的少女想为“活着”而战。",
+ quote:"【语音大意】愿每一次燃烧，都为守护而发",
+ desc:"SAM装甲里的少女，病痛偷走了她的岁月，却没偷走她对“活着”的渴望。萤火虽微，敢与整个星海对赌。",
+ vec:[75,65,70,80,55,65,85,70,90,70]},
+{name:"翡翠",en:"JADE",fac:"星际和平公司",cls:"量子 · 智识",rar:5,
+ kw:["猫系慵懒","掌控欲","契约猎手","深藏孤独"],
+ line:"把银河当赌桌的投资人，签下契约便是她的猎物。",
+ quote:"【语音大意】想要什么，看你出得起什么价",
+ desc:"战略投资部的“猎手”，契约是她的蛛网。慵懒地签下每一份合同，用别人的欲望织自己的棋局。",
+ vec:[60,92,70,65,70,55,40,70,85,65]},
+{name:"云璃",en:"YUNLI",fac:"仙舟联盟",cls:"物理 · 毁灭",rar:5,
+ kw:["反击剑痴","嘴硬好胜","豁达大条","恩怨分明"],
+ line:"“以彼之道还施彼身”的格剑少女。",
+ quote:"【语音大意】来啊，接我这一剑",
+ desc:"云骑军里的格剑高手，魔阴身的克星。嘴上说“才不是为了你”，剑却永远替朋友挡在最前。",
+ vec:[85,55,65,75,50,50,60,65,85,80]},
+{name:"椒丘",en:"JIAOQIU",fac:"仙舟联盟",cls:"火 · 虚无",rar:5,
+ kw:["病弱智囊","毒舌调侃","笑里设局","药膳厨"],
+ line:"端着药膳火锅的军师，笑着布好棋局。",
+ quote:"【语音大意】药再苦也得喝",
+ desc:"味觉尽失的狐人医师，熬得一手好药膳。看似病弱慵懒，实为飞霄帐下最锋利的军师——关心都是苦口后回甘。",
+ vec:[55,90,70,70,70,50,65,50,70,75]},
+{name:"飞霄",en:"FEIXIAO",fac:"仙舟联盟",cls:"风 · 巡猎",rar:5,
+ kw:["豪迈不羁","战意如虹","将帅气度","带病狩猎"],
+ line:"“天击将军”，把猎杀当人生的猛将。",
+ quote:"【语音大意】风起云动，狩猎开始了",
+ desc:"云骑军天击将军，与体内的魔阴身赛跑多年。打猎、饮酒、破阵，活得比谁都痛快——因为她知道时间的价码。",
+ vec:[90,75,70,85,55,55,70,80,90,85]},
+{name:"灵砂",en:"LINGSHA",fac:"仙舟罗浮",cls:"火 · 丰饶",rar:5,
+ kw:["干练泼辣","雷厉风行","外冷内热","规矩至上"],
+ line:"十王司司鼎，治病下猛药管人也下猛药。",
+ quote:"【语音大意】病要治，规矩也要立",
+ desc:"丹鼎司新任司鼎，香雾里藏着雷霆手段。医术和规矩一起抓，温柔和底线分得清清楚楚。",
+ vec:[75,85,70,90,55,85,70,45,85,60]},
+{name:"貊泽",en:"MOZE",fac:"仙舟联盟",cls:"雷 · 巡猎",rar:4,
+ kw:["暗影寡言","高效忠诚","存在感稀薄","一针见血"],
+ line:"藏进阴影的影卫，出手永远比话多。",
+ quote:"【语音大意】目标，锁定",
+ desc:"影卫的日常：没人注意到他的时候，就是他干得最漂亮的时候。话少，刀快，忠心藏得比刀还深。",
+ vec:[80,80,20,90,45,75,50,50,85,20]},
+{name:"乱破",en:"RAPPA",fac:"银河游侠",cls:"虚数 · 智识",rar:5,
+ kw:["中二燃系","自我陶醉","大嗓门走心","笨拙的善良"],
+ line:"自称宇宙最强忍者的写实派涂鸦武士。",
+ quote:"【语音大意】帅，就是忍者的忍道",
+ desc:"巡海游侠里的“忍者”，忍道只有一条：帅。招式全靠气势拉满，心事全靠涂鸦表达，善良得笨拙又滚烫。",
+ vec:[85,45,80,70,65,35,70,80,80,95]},
+{name:"星期日",en:"SUNDAY",fac:"匹诺康尼",cls:"虚数 · 同谐",rar:5,
+ kw:["秩序至上","控制欲","救世主情结","替人抉择"],
+ line:"把乐园当鸟笼造的牧羊人。",
+ quote:"【语音大意】我愿替所有人承担痛苦",
+ desc:"家族的执权者，温和表象下是“替众生决定幸福”的执念。他真的愿意为所有人背负一切——包括折断他们的翅膀。",
+ vec:[60,90,55,95,55,95,45,40,90,65]},
+{name:"忘归人",en:"FUGUE",fac:"仙舟罗浮",cls:"火 · 虚无",rar:5,
+ kw:["妩媚神秘","亦正亦邪","话藏锋刃","九尾新生"],
+ line:"从灰烬中重生的“非停云”，笑里带着火。",
+ quote:"【语音大意】旧名已忘，归途未明",
+ desc:"劫火中诞生的九尾新生命，拾起了停云的记忆却不认这个旧名。慵懒的笑意下，是与过去告别的疼。",
+ vec:[65,85,75,55,65,45,55,65,85,75]},
+{name:"阿格莱雅",en:"AGLAEA",fac:"翁法罗斯黄金裔",cls:"雷 · 记忆",rar:5,
+ kw:["女王威仪","以美为律","言辞锋利","罕示柔软"],
+ line:"以金线织衣亦织命运的执政官。",
+ quote:"【语音大意】金丝既已织就，循此而行吧",
+ desc:"奥赫玛的织金执政官，为英雄的命运缝制金线。威仪是她的铠甲，针脚之间藏着不轻易示人的柔软。",
+ vec:[65,90,60,90,60,90,55,45,90,70]},
+{name:"缇宝",en:"TRIBBIE",fac:"翁法罗斯黄金裔",cls:"量子 · 同谐",rar:5,
+ kw:["三位一体","天真烂漫","早慧圣女","神谕传声"],
+ line:"窃夺门径火种的圣女，三姐妹一体同音。",
+ quote:"【语音大意】缇宝缇宁缇夏，一起上哦",
+ desc:"一个身体里住着三姐妹，说话永远自带和声。天真烂漫的外表下，是背负神谕的早慧圣女。",
+ vec:[70,65,75,80,70,65,80,55,75,80]},
+{name:"万敌",en:"MYDEI",fac:"翁法罗斯黄金裔",cls:"虚数 · 毁灭",rar:5,
+ kw:["傲岸重诺","外冷内热","王储担当","向死而生"],
+ line:"不死王储抛开王座，以战士之身逐火。",
+ quote:"“我是悬锋的王储『迈德漠斯』，亦是奥赫玛的战士『万敌』。”",
+ desc:"不死之躯在千百次死亡里淬炼。他把王座留在身后，把并肩作战的诺言扛在肩上——冷脸之下，是滚烫的义气。",
+ vec:[80,75,45,90,50,65,65,65,95,50]},
+{name:"遐蝶",en:"CASTORICE",fac:"翁法罗斯黄金裔",cls:"量子 · 记忆",rar:5,
+ kw:["温柔疏离","触碰即亡","悲悯克制","渴望羁绊"],
+ line:"拥抱即死亡的冥河之女，最怕伤人心。",
+ quote:"【语音大意】请与我保持距离……这是为你们好",
+ desc:"死亡常伴左右的少女，双手比刀剑更危险。她渴望触碰，又害怕伤害，把所有温柔都隔着一层薄冰。",
+ vec:[50,70,45,80,60,70,90,35,85,45]},
+{name:"那刻夏",en:"ANAXA",fac:"翁法罗斯黄金裔",cls:"风 · 智识",rar:5,
+ kw:["渎神怀疑","毒舌锋利","傲然独行","求知若狂"],
+ line:"渎神学者，把怀疑的枝杈刺入智慧圣树。",
+ quote:"“可笑。这世界遍地虚假……”",
+ desc:"以“渎神者”之名质疑一切存在。他不在乎神明与世俗的怒火，只在乎真相是否经得起怀疑。",
+ vec:[65,97,35,70,98,50,35,60,85,75]},
+{name:"风堇",en:"HYACINE",fac:"翁法罗斯黄金裔",cls:"风 · 记忆",rar:5,
+ kw:["元气仁心","乐观开朗","医者仁术","翼人娇小"],
+ line:"骑天马的翼人医师，用笑容治愈病痛。",
+ quote:"【语音大意】别担心，把伤口交给风堇吧",
+ desc:"翁法罗斯的元气小医师，骑着天马出诊。乐观是她的处方，笑容是她的药引。",
+ vec:[70,60,85,80,65,60,90,55,75,85]},
+{name:"赛飞儿",en:"CIPHER",fac:"翁法罗斯黄金裔",cls:"量子 · 虚无",rar:5,
+ kw:["狡黠戏谑","谎语成真","外痞内义","侠盗独行"],
+ line:"谎言成真的贼星，偷遍诸神不留名。",
+ quote:"“呵，还想诓我？没门！”",
+ desc:"诡计火种的继承者，满嘴跑火车却句句能成真。偷天换日是她的专业，侠义是她的副业——副业还不许她承认。",
+ vec:[80,80,75,55,75,30,55,85,80,80]},
+{name:"白厄",en:"PHAINON",fac:"翁法罗斯黄金裔",cls:"物理 · 毁灭",rar:5,
+ kw:["阳光热血","平民英雄","自嘲普通","背负末日"],
+ line:"自称普通人的白日梦骑士，扛下创世之重。",
+ quote:"“哀丽秘榭的白厄，向你致意。相聚即是缘分。”",
+ desc:"黄金裔里的“普通人”，却总在最危险的时候站最前。他的笑容治愈所有人——除了他自己咽下的那部分黑暗。",
+ vec:[80,65,85,90,60,60,85,70,95,85]},
+{name:"海瑟音",en:"HYSILENS",fac:"翁法罗斯黄金裔",cls:"物理 · 虚无",rar:5,
+ kw:["悲情忠臣","弑君轮回","歌喉魅惑","深海孤寂"],
+ line:"三千万次轮回皆弑君的海妖公主与骑士统领。",
+ quote:"【语音大意】君主的意志，即是歌的终章",
+ desc:"海洋的半神，歌声能令诸神俯首。三千万次轮回里，她一次次把剑指向挚爱——忠诚是她的宿命，也是她的牢笼。",
+ vec:[60,80,55,90,55,70,60,45,90,60]},
+{name:"刻律德菈",en:"CERYDRA",fac:"翁法罗斯黄金裔",cls:"风 · 同谐",rar:5,
+ kw:["僭主威权","律令至上","强势掌控","唯我独断"],
+ line:"翁法罗斯唯一僭主，以律法驭使天下。",
+ quote:"【语音大意】律法所至，诸神亦须俯首",
+ desc:"以凡人之躯执掌律法，令神明亦须听令。独断是她的姿态，秩序是她的信仰。",
+ vec:[70,90,55,85,55,95,40,50,85,75]},
+{name:"长夜月",en:"EVERNIGHT",fac:"岁月火种",cls:"冰 · 记忆",rar:5,
+ kw:["甜腻偏执","温柔危险","守护成瘾","不惜代价"],
+ line:"自长夜而来的记忆之子，守护即一切代价。",
+ quote:"“别担心，我会为你看护『开拓』的前路…不惜任何代价♪”",
+ desc:"从长夜中苏醒的另一个“三月七”。甜腻的语调裹着偏执，她给出的守护，从不问代价。",
+ vec:[55,70,40,95,50,55,75,45,90,70]},
+{name:"丹恒·腾荒",en:"DAN HENG PT",fac:"星穹列车",cls:"物理 · 存护",rar:5,
+ kw:["沉静寡言","御龙护人","担当成长","前世羁绊"],
+ line:"列车枪手继承存护龙力，盾守同行者。",
+ quote:"【语音大意】此身即是屏障，诸位安心前行",
+ desc:"接过龙尊之力的丹恒，把“守护”二字练成了本能。话比以前更少，盾比以前更重。",
+ vec:[65,80,40,90,45,80,75,40,90,30]},
+{name:"昔涟",en:"CYRENE",fac:"翁法罗斯",cls:"冰 · 记忆",rar:5,
+ kw:["温柔悲悯","以爱创世","自我牺牲","轮回守望"],
+ line:"白厄的挚爱亦是迷迷，逆岁月填补因果。",
+ quote:"【语音大意】这会是个浪漫的故事，对么",
+ desc:"在岁月尽头守望了亿万次的女孩。她的浪漫是：把爱写进因果，把自己还给长夜。",
+ vec:[45,75,65,85,70,65,95,40,90,65]},
+{name:"大丽花",en:"THE DAHLIA",fac:"焚化工",cls:"火 · 虚无",rar:5,
+ kw:["温柔魅惑","外热内冷","野心勃勃","嗜焚记忆","嗜舞"],
+ line:"以火与舞焚尽记忆、游走诸命途间的“背叛之花”。",
+ quote:"“我的名字是康士坦丝，那些跪倒于我裙摆下的人称我为『大丽花』。”",
+ desc:"本名康士坦丝的迷因舞者，叛离毁灭、叛离忆庭。她焚掉的记忆化作裙摆上的火焰，旋身之间，诸界为之侧目。",
+ vec:[60,88,70,55,80,50,45,75,85,80]},
+{name:"爻光",en:"YAO GUANG",fac:"仙舟联盟",cls:"物理 · 欢愉",rar:5,
+ kw:["占卜军师","诙谐通透","笑藏机锋","德高望重"],
+ line:"仙舟玉阙戎韬将军，算尽天机偏爱说笑。",
+ quote:"【语音大意】天机嘛，笑着说才有趣",
+ desc:"玉阙的占卜军师，把天机当段子讲。算无遗策的老将，偏偏最爱用玩笑话说最深的谋。",
+ vec:[55,92,75,80,80,55,70,50,80,85]},
+{name:"火花",en:"SPARXIE",fac:"假面愚者",cls:"火 · 欢愉",rar:5,
+ kw:["流量狂欢","直播造梗","求赞求关注","面具哲学"],
+ line:"把人生当直播间，谁被看见谁就是答案。",
+ quote:"【语音大意】点赞！关注！狂欢直到世界尽头！",
+ desc:"花火的新面具：全民主播时代的欢愉化身。她的逻辑很朴素——被看见，就是存在本身。",
+ vec:[80,55,90,50,70,25,55,75,70,95]},
+{name:"不死途",en:"ASHVEIL",fac:"不死途侦探事务所",cls:"雷 · 巡猎",rar:5,
+ kw:["懒散营业","直觉破案","盼退休","冷面幽默"],
+ line:"睡冰箱蹲委托的名侦探，全凭直觉屡破奇案。",
+ quote:"【语音大意】委托费先结，案子随缘",
+ desc:"仙舟首席（自封）侦探，接案标准是“看心情”。破案靠直觉，收费不含糊——但真凶永远逃不出他的懒散眼神。",
+ vec:[45,85,55,65,80,30,60,45,70,60]},
+{name:"银狼LV.999",en:"SILVER WOLF LV.999",fac:"星核猎手",cls:"虚数 · 欢愉",rar:5,
+ kw:["无敌玩家","骇客宅女","开挂爽感","童心较真"],
+ line:"银狼开启Godmode，把现实玩成满级账号。",
+ quote:"【语音大意】这局我开挂了，不服？",
+ desc:"银狼的新存档：管理员权限到手，全图开启无敌模式。较真起来连“爽感”都要优化到帧。",
+ vec:[65,88,50,50,80,35,50,65,70,75]},
+{name:"绯英",en:"EVANESCIA",fac:"二相乐园",cls:"物理 · 欢愉",rar:5,
+ kw:["元气自来熟","资深同好","爱玩梗","舞台表演欲"],
+ line:"自称“永远青春靓丽的高中生”，狂欢系观察员。",
+ quote:"“恭喜你发现宝藏！我就是绯英，你好啊，大主角小浣熊。”",
+ desc:"二相乐园的特邀观察员，追番追星追到天荒地老。舞台是她的主场，梗是她的母语。",
+ vec:[75,55,88,60,80,35,70,70,75,92]},
+{name:"千冶·刃",en:"MORTENAX BLADE",fac:"星核猎手",cls:"火 · 虚无",rar:5,
+ kw:["求死执念","宿怨成火","工匠残心","以身铸剑"],
+ line:"支离此身千冶成刃，与神明同赴彼岸。",
+ quote:"【语音大意】支离此身，千冶成刃",
+ desc:"刃的另一种结局：把不死之躯熔进熔炉，将自己铸成一柄问神之刃。宿怨是火种，赴死是归途。",
+ vec:[80,65,15,60,40,55,25,70,95,25]},
+{name:"姬子·启行",en:"HIMEKO NOVA",fac:"星穹列车",cls:"火 · 智识",rar:5,
+ kw:["沉着果决","机甲控场","导师气场","慨然赴战"],
+ line:"驾驶机甲迎向决战的领航员。",
+ quote:"“我是星穹列车的领航员姬子，永远与你眺望同一风景的家人。”",
+ desc:"决战时刻，领航员坐进了机甲。沉着依旧，火力翻倍——因为要守护的人，都在身后。",
+ vec:[80,85,60,90,60,75,75,70,90,60]},
+{name:"远坂凛",en:"RIN TOHSAKA",fac:"Fate[UBW]联动",cls:"量子 · 智识",rar:5,
+ kw:["完美傲娇","精算务实","名门自尊","外冷内软"],
+ line:"异界魔术师接管幻造圣杯战争。",
+ quote:"【语音大意】我可是数值一流的魔术师",
+ desc:"远坂家的当主，行动前必算魔力收支的完美主义者。嘴上“哼”得最响，出手救人的永远是她。",
+ vec:[75,88,65,85,60,80,65,55,85,75]},
+{name:"吉尔伽美什",en:"GILGAMESH",fac:"Fate[UBW]联动",cls:"雷 · 毁灭",rar:5,
+ kw:["傲慢至上","蔑视群愚","珍宝如命","最古之王"],
+ line:"最古英雄王开启宝库，倾泻神财碾碎凡愚。",
+ quote:"【语音大意】杂种，跪下仰望王的宝库吧",
+ desc:"人类最古老的英雄王。他的傲慢有万件宝物撑腰——毕竟“本王的收藏，就是世界本身”。",
+ vec:[85,75,35,55,50,35,20,80,95,90]},
+{name:"知更鸟·晴歌",en:"ROBIN SUMMERETTO",fac:"匹诺康尼",cls:"风 · 记忆",rar:5,
+ kw:["歌姬治愈","温柔坚定","以歌载忆","唤醒希望"],
+ line:"歌姬召忆灵乐手伴奏，唱醒沉睡的晴空。",
+ quote:"【语音大意】这首歌，唱给追赶风的人",
+ desc:"知更鸟的新舞台：以歌为引，唤醒记忆里的晴空。温柔依旧，力量升级。",
+ vec:[50,70,85,80,60,70,90,45,80,75]},
+{name:"砂金·戏浪",en:"AVENTURINE WAVEFLAIR",fac:"星际和平公司",cls:"量子 · 欢愉",rar:5,
+ kw:["赌徒豪兴","戏浪弄潮","底牌哲学","孤勇假面"],
+ line:"赌徒把千星当筹码，浪尖上押全部人生。",
+ quote:"【语音大意】赌局开场，押上你的一切吧",
+ desc:"砂金的新赌局：浪尖之上，底牌全开。豪兴是他的面具，孤勇是他的底色。",
+ vec:[80,85,85,60,65,30,45,95,85,85]},
+{name:"真珠",en:"PEARL",fac:"二相乐园",cls:"冰 · 欢愉",rar:5,
+ kw:["追美极境","喜剧护场","存护底色","笑声馈赠"],
+ line:"因解析艺术而生，以笑声与“好活”守护众生。",
+ quote:"【语音大意】美的极境，值得全场起立",
+ desc:"二相乐园的CEO，把“守护”做成了喜剧舞台。她追逐美的极境，笑声是她的温柔陷阱。",
+ vec:[65,75,80,70,90,55,75,60,75,80]},
+{name:"Saber",en:"ARTORIA PENDRAGON",fac:"Fate[UBW]联动",cls:"风 · 毁灭",rar:5,
+ kw:["骑士王威严","理想主义","责任自持","温和疏离"],
+ line:"骑士王挥誓约胜利之剑，终结技清场。",
+ quote:"【语音大意】此剑，即为斩断黄昏之光",
+ desc:"亚瑟王御驾星海。克制、守礼、责任感溢出面板——骑士的另一面，是对胜利后庆功宴的好奇。",
+ vec:[80,75,50,95,50,85,70,60,95,45]},
+{name:"Archer",en:"EMIYA",fac:"Fate[UBW]联动",cls:"量子 · 巡猎",rar:5,
+ kw:["冷峻现实","吐槽毒舌","外刚内柔","守护者"],
+ line:"投影千剑的卫宫，用无限剑制补足战技点。",
+ quote:"【语音大意】I am the bone of my sword",
+ desc:"自称“三流的魔术师”，剑骨铸成的守护者。吐槽是本能，补刀是职业，理想藏在无限剑制的最深处。",
+ vec:[75,90,45,85,55,60,60,50,90,60]}
+];
+
+/* ================= 工具 ================= */
+const $=id=>document.getElementById(id);
+function shuffle(a){const b=a.slice();for(let i=b.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[b[i],b[j]]=[b[j],b[i]];}return b;}
+/* 交错出题顺序：5轮 × 10维，避免同维度连续出现 */
+const ORDER=[];
+for(let r=0;r<5;r++)for(let d=0;d<10;d++){
+  const idx=QBANK.findIndex((q,i)=>q.dim===d && QBANK.slice(0,i).filter(x=>x.dim===d).length===r);
+  ORDER.push(idx);
+}
+const QUIZ=ORDER.map(i=>QBANK[i]);
+const OPTKEYS=["A","B","C","D"];
+
+let answers=new Array(50).fill(null);
+let qIdx=0;
+let curOpts=[]; /* 当前题目的乱序选项索引 */
+let optOrders=new Array(50).fill(null); /* 每题只洗牌一次并缓存 */
+
+function starStr(n){return "★".repeat(n);}
+function pctOf(S){return Math.max(5,Math.min(99,Math.round((S-0.5)*200)));}
+function matchScore(u,c){
+  let dot=0,nu=0,nc=0,d2=0;
+  for(let i=0;i<10;i++){dot+=u[i]*c[i];nu+=u[i]*u[i];nc+=c[i]*c[i];const d=u[i]-c[i];d2+=d*d;}
+  const cos=dot/(Math.sqrt(nu)*Math.sqrt(nc)||1);
+  const distTerm=1-Math.sqrt(d2)/316.23;
+  return 0.55*cos+0.45*distTerm;
+}
+
+/* ================= 雷达图 ================= */
+function radarSVG(size,vA,vB,showLabels){
+  const cx=size/2,cy=size/2,R=size/2-(showLabels?52:24);
+  const n=10,ang=i=>-Math.PI/2+i*2*Math.PI/n;
+  const pt=(i,r)=>[cx+Math.cos(ang(i))*r,cy+Math.sin(ang(i))*r];
+  const poly=v=>v.map((val,i)=>pt(i,R*val/100).map(x=>x.toFixed(1)).join(",")).join(" ");
+  let s="";
+  for(let ring=20;ring<=100;ring+=20){
+    const pts=Array.from({length:n},(_,i)=>pt(i,R*ring/100).map(x=>x.toFixed(1)).join(",")).join(" ");
+    s+=`<polygon points="${pts}" fill="none" stroke="#1c2f3f" stroke-width="1"/>`;
+  }
+  for(let i=0;i<n;i++){
+    const [x,y]=pt(i,R);
+    s+=`<line x1="${cx}" y1="${cy}" x2="${x.toFixed(1)}" y2="${y.toFixed(1)}" stroke="#1c2f3f" stroke-width="1"/>`;
+  }
+  if(vA) s+=`<polygon points="${poly(vA)}" fill="rgba(157,184,255,.18)" stroke="#9db8ff" stroke-width="2" style="filter:drop-shadow(0 0 5px rgba(157,184,255,.6))"/>`;
+  if(vB) s+=`<polygon points="${poly(vB)}" fill="rgba(255,182,72,.14)" stroke="#ffb648" stroke-width="2" style="filter:drop-shadow(0 0 5px rgba(255,182,72,.5))"/>`;
+  if(showLabels){
+    for(let i=0;i<n;i++){
+      const [x,y]=pt(i,R+30);
+      const anchor=Math.abs(x-cx)<8?"middle":(x>cx?"start":"end");
+      s+=`<text x="${x.toFixed(1)}" y="${(y+4).toFixed(1)}" fill="#7d97a8" font-size="12" text-anchor="${anchor}" font-family="Microsoft YaHei">${DIMS[i].n}</text>`;
+    }
+  }
+  return `<svg width="${size}" height="${size}" viewBox="0 0 ${size} ${size}">${s}</svg>`;
+}
+
+/* ================= 页面切换 ================= */
+function show(id){
+  document.querySelectorAll(".screen").forEach(e=>e.classList.remove("on"));
+  $(id).classList.add("on");
+  window.scrollTo({top:0,behavior:"smooth"});
+}
+
+/* ================= 欢迎页渲染 ================= */
+(function(){
+  $("dim-list").innerHTML=DIMS.map((d,i)=>
+    `<div class="dim-cell"><div class="no">DIM-0${i+1}</div><div class="nm">${d.n}</div></div>`).join("");
+})();
+
+/* ================= 答题 ================= */
+function renderQ(){
+  const q=QUIZ[qIdx];
+  $("q-no").textContent=String(qIdx+1).padStart(2,"0");
+  $("q-text").innerHTML=q.t;
+  $("q-bar").innerHTML=QUIZ.map((_,i)=>`<i class="${answers[i]!==null?"f":""}"></i>`).join("");
+  if(!optOrders[qIdx])optOrders[qIdx]=shuffle(q.o.map((_,i)=>i));
+  curOpts=optOrders[qIdx];
+  $("q-opts").innerHTML=curOpts.map((oi,k)=>{
+    const o=q.o[oi];
+    const sel=answers[qIdx]===oi;
+    return `<div class="opt${sel?" sel":""}" data-i="${oi}"><span class="key">${OPTKEYS[k]}</span><span>${o.x}</span></div>`;
+  }).join("");
+  document.querySelectorAll("#q-opts .opt").forEach(el=>{
+    el.addEventListener("click",()=>pick(+el.dataset.i));
+  });
+  $("btn-prev").disabled=qIdx===0;
+  const done=answers.every(a=>a!==null);
+  const last=qIdx===49;
+  $("btn-next").style.display=last?"none":"";
+  $("btn-next").disabled=answers[qIdx]===null;
+  $("btn-gen").style.display=last?"":"none";
+  $("btn-gen").disabled=!done;
+}
+function pick(oi){
+  answers[qIdx]=oi;
+  renderQ();
+}
+$("btn-prev").addEventListener("click",()=>{if(qIdx>0){qIdx--;renderQ();}});
+$("btn-next").addEventListener("click",()=>{if(qIdx<49&&answers[qIdx]!==null){qIdx++;renderQ();}});
+document.addEventListener("keydown",e=>{
+  if(!$("scr-quiz").classList.contains("on"))return;
+  if(["1","2","3","4"].includes(e.key)){
+    const k=+e.key-1;
+    if(curOpts[k]!==undefined)pick(curOpts[k]);
+  }else if(e.key==="ArrowLeft"&&qIdx>0){qIdx--;renderQ();}
+  else if(e.key==="ArrowRight"&&qIdx<49&&answers[qIdx]!==null){qIdx++;renderQ();}
+});
+$("btn-start").addEventListener("click",()=>{qIdx=0;renderQ();show("scr-quiz");});
+$("btn-gen").addEventListener("click",()=>{
+  if(!answers.every(a=>a!==null))return;
+  buildReport();show("scr-result");
+});
+$("btn-restart").addEventListener("click",()=>{answers=new Array(50).fill(null);qIdx=0;show("scr-welcome");});
+$("btn-roster").addEventListener("click",()=>{buildRoster();show("scr-roster");});
+$("btn-roster2").addEventListener("click",()=>{buildRoster();show("scr-roster");});
+$("btn-back").addEventListener("click",()=>show("scr-welcome"));
+
+/* ================= 报告 ================= */
+function userVec(){
+  const sums=new Array(10).fill(0),cnt=new Array(10).fill(0);
+  QUIZ.forEach((q,i)=>{
+    if(answers[i]===null)return;
+    sums[q.dim]+=q.o[answers[i]].s;cnt[q.dim]++;
+  });
+  return sums.map((s,i)=>Math.round(s/cnt[i]));
+}
+function whyText(u,c){
+  const both=[];
+  for(let i=0;i<10;i++){if(u[i]>=70&&c[i]>=70&&Math.abs(u[i]-c[i])<=18)both.push(DIMS[i].n);}
+  const topC=DIMS.map((d,i)=>[d.n,c[i]]).sort((a,b)=>b[1]-a[1]).slice(0,2).map(x=>x[0]);
+  const lowC=DIMS.map((d,i)=>[d.n,c[i]]).sort((a,b)=>a[1]-b[1]).slice(0,1).map(x=>x[0]);
+  let t;
+  if(both.length>=2)t=`你们在「${both.slice(0,3).join("、")}」上高度同频`;
+  else if(both.length===1)t=`你们在「${both[0]}」上高度同频`;
+  else t=`你们的人格节奏互补，各有所长`;
+  return t+`。TA 最突出的是「${topC.join("、")}」，而「${lowC[0]}」恰好是需要包容的差异点。`;
+}
+function charCardHTML(c,rank,pct,uv){
+  const r1=rank===1;
+  return `<div class="panel corner ${r1?"":"mini-card"}">
+    <div class="match-rank ${r1?"r1":""}">${r1?"★ BEST MATCH //":"MATCH NO."} ${String(rank).padStart(2,"0")}</div>
+    <div class="match-card">
+      <div class="radarbox">${radarSVG(r1?250:210,uv,c.vec,false)}</div>
+      <div>
+        <div class="match-pct">${pct}<small> % 同步率</small></div>
+        <div class="ch-name">${c.name} <span class="ch-en">// ${c.en}</span></div>
+        <div class="stars">${starStr(c.rar)}</div>
+        <div class="ch-meta">${c.fac} ｜ <em>${c.cls}</em></div>
+        <div style="margin-top:8px">${c.kw.map(k=>`<span class="kw">${k}</span>`).join("")}</div>
+        <div class="ch-line">${c.line}</div>
+        ${r1?`<div class="ch-desc">${c.desc}</div>`:""}
+        <div class="ch-quote">${c.quote}</div>
+        <div class="match-why">${whyText(uv,c.vec)}</div>
+      </div>
+    </div>
+  </div>`;
+}
+function buildReport(){
+  const uv=userVec();
+  $("user-radar").innerHTML=radarSVG(360,uv,null,true);
+  $("user-bars").innerHTML=`<div class="h-sec">DIMENSION BREAKDOWN // <b>十维解析</b></div>`+
+    DIMS.map((d,i)=>`<div class="bar-row"><span class="bn">${d.n}</span><div class="bt"><div class="bf" style="width:0%"></div></div><span class="bv">${uv[i]}</span></div>`).join("");
+  requestAnimationFrame(()=>{setTimeout(()=>{
+    document.querySelectorAll("#user-bars .bf").forEach((el,i)=>el.style.width=uv[i]+"%");
+  },80);});
+  const scored=CHARS.map(c=>({c,S:matchScore(uv,c.vec)})).sort((a,b)=>b.S-a.S);
+  const top=scored.slice(0,3);
+  $("top3").innerHTML=top.map((x,i)=>charCardHTML(x.c,i+1,pctOf(x.S),uv)).join("");
+}
+
+/* ================= 角色库 ================= */
+function buildRoster(){
+  $("roster-grid").innerHTML=CHARS.map((c,i)=>`
+    <div class="rcard" data-i="${i}">
+      <div class="rn">${c.name}</div>
+      <div class="rr stars">${starStr(c.rar)}</div>
+      <div class="rf">${c.fac} // ${c.cls}</div>
+      <div class="rk">${c.kw.join(" · ")}</div>
+    </div>`).join("");
+  document.querySelectorAll(".rcard").forEach(el=>{
+    el.addEventListener("click",()=>openChar(+el.dataset.i));
+  });
+}
+function openChar(i){
+  const c=CHARS[i];
+  $("modal-box").innerHTML=`
+    <div class="h-sec">OPERATOR FILE // <b>${c.en}</b></div>
+    <div class="mgrid">
+      <div class="radarbox">${radarSVG(230,c.vec,null,false)}</div>
+      <div>
+        <div class="ch-name">${c.name} <span class="ch-en">// ${c.en}</span></div>
+        <div class="stars">${starStr(c.rar)}</div>
+        <div class="ch-meta">${c.fac} ｜ <em>${c.cls}</em></div>
+        <div style="margin-top:8px">${c.kw.map(k=>`<span class="kw">${k}</span>`).join("")}</div>
+        <div class="ch-line">${c.line}</div>
+        <div class="ch-desc">${c.desc}</div>
+        <div class="ch-quote">${c.quote}</div>
+      </div>
+    </div>
+    <div class="h-sec" style="margin-top:20px">PERSONA VECTOR // <b>十维画像</b></div>
+    ${DIMS.map((d,j)=>`<div class="m-dimline"><span class="n">${d.n}</span><div class="t"><i style="width:${c.vec[j]}%"></i></div><span class="v">${c.vec[j]}</span></div>`).join("")}
+    <button class="btn ghost m-close" id="m-close">关闭档案</button>`;
+  $("modal-mask").classList.add("on");
+  $("m-close").addEventListener("click",()=>$("modal-mask").classList.remove("on"));
+}
+$("modal-mask").addEventListener("click",e=>{
+  if(e.target===$("modal-mask"))$("modal-mask").classList.remove("on");
+});
+
+/* ================= QQ/微信内置浏览器检测 ================= */
+(function(){
+  var ua=navigator.userAgent.toLowerCase();
+  if(ua.indexOf("qq/")>-1||ua.indexOf("micromessenger")>-1||ua.indexOf("mqqbrowser")>-1){
+    $("open-guide").classList.add("on");
+    $("guide-x").addEventListener("click",()=>$("open-guide").classList.remove("on"));
+  }
+})();
+
+/* ================= 启动动画 ================= */
+(function(){
+  const lines=document.querySelectorAll("#bootbox .ln");
+  lines.forEach((ln,i)=>setTimeout(()=>ln.classList.add("show"),350+i*430));
+  setTimeout(()=>{
+    $("boot").classList.remove("on");
+    $("main").style.display="";
+    show("scr-welcome");
+  },350+lines.length*430+700);
+})();
+</script>
+</body>
+</html>
